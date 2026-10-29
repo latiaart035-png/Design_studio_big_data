@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM - Аналитика клиентов | Design Studio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="src/css/crm.css">
+    <style>
+        /* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ===== */
+
+        /* KPI Trend Colors */
+        .kpi-trend.up { color: #28a745; }
+        .kpi-trend.down { color: #dc3545; }
+        .kpi-trend.neutral { color: #6c757d; }
+
+        /* KPI Tooltips */
+        .kpi-card[title] { cursor: help; position: relative; }
+        .kpi-card[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 10;
+            margin-bottom: 4px;
+        }
+
+        /* Segment Legend */
+        .segment-legend {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .segment-legend h6 { margin-bottom: 10px; }
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* RFM Explanation */
+        .rfm-explanation .alert { border: none; }
+
+        /* ABC Formula */
+        .abc-formula .formula-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .abc-formula .formula-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .abc-formula .formula-code {
+            font-family: monospace;
+            font-size: 11px;
+            color: #6B1F3F;
+        }
+
+        /* Funnel Formulas */
+        .funnel-formulas .formula-box {
+            border: 1px solid #e9ecef;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .funnel-formulas .formula-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .funnel-formulas .formula-code {
+            font-family: monospace;
+            font-size: 11px;
+            color: #6B1F3F;
+        }
+
+        /* Empty State */
+        .empty-state { padding: 40px; text-align: center; }
+        .empty-state i { font-size: 48px; color: #ccc; margin-bottom: 16px; display: block; }
+        .empty-state p { color: #6c757d; margin-bottom: 16px; }
+
+        /* Toast Container */
+        #toastContainer {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 280px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid #28a745;
+        }
+        .toast-error { border-left-color: #dc3545; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* RFM Badge Colors */
+        .rfm-badge.champions { background: #28a745; color: white; }
+        .rfm-badge.loyal { background: #17a2b8; color: white; }
+        .rfm-badge.potential { background: #ffc107; color: black; }
+        .rfm-badge.at-risk { background: #fd7e14; color: white; }
+        .rfm-badge.dormant { background: #6c757d; color: white; }
+        .rfm-badge.lost { background: #dc3545; color: white; }
+        .rfm-badge.na { background: #e9ecef; color: #6c757d; }
+
+        /* Drawer Right */
+        .drawer-right {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            z-index: 1050;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .drawer-right.open { right: 0; }
+        .drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 1040;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .drawer-overlay.show { opacity: 1; pointer-events: all; }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+        .drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+        .drawer-section {
+            margin-bottom: 24px;
+        }
+        .drawer-section h6 {
+            font-size: 13px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .customer-avatar {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: #6B1F3F;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Modal Custom */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .modal-header .modal-title { margin: 0; font-size: 18px; }
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* Segment Card V2 — ИСПРАВЛЕНО */
+        .segment-card-v2 {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .segment-card-v2:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .segment-card-v2.vip { border-left: 4px solid #28a745; }
+        .segment-card-v2.premium { border-left: 4px solid #17a2b8; }
+        .segment-card-v2.active { border-left: 4px solid #007bff; }
+        .segment-card-v2.basic { border-left: 4px solid #6c757d; }
+        .segment-card-v2.lost { border-left: 4px solid #dc3545; }
+
+        .segment-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .segment-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .segment-card-v2.vip .segment-icon { background: #28a74520; color: #28a745; }
+        .segment-card-v2.premium .segment-icon { background: #17a2b820; color: #17a2b8; }
+        .segment-card-v2.active .segment-icon { background: #007bff20; color: #007bff; }
+        .segment-card-v2.basic .segment-icon { background: #6c757d20; color: #6c757d; }
+        .segment-card-v2.lost .segment-icon { background: #dc354520; color: #dc3545; }
+
+        .segment-card-header h5 { margin: 0; font-size: 16px; }
+        .segment-card-header p { margin: 4px 0 0; font-size: 12px; color: #6c757d; }
+
+        .segment-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .segment-stat { text-align: center; }
+        .stat-value { font-size: 18px; font-weight: 700; }
+        .segment-card-v2.vip .stat-value { color: #28a745; }
+        .segment-card-v2.premium .stat-value { color: #17a2b8; }
+        .segment-card-v2.active .stat-value { color: #007bff; }
+        .segment-card-v2.basic .stat-value { color: #6c757d; }
+        .segment-card-v2.lost .stat-value { color: #dc3545; }
+        .stat-label { font-size: 11px; color: #6c757d; }
+
+        .segment-bar {
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+        .segment-card-v2.vip .bar-fill { background: #28a745; }
+        .segment-card-v2.premium .bar-fill { background: #17a2b8; }
+        .segment-card-v2.active .bar-fill { background: #007bff; }
+        .segment-card-v2.basic .bar-fill { background: #6c757d; }
+        .segment-card-v2.lost .bar-fill { background: #dc3545; }
+
+        .segment-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .segment-actions .btn { font-size: 12px; }
+
+        /* Custom Segments Grid */
+        .custom-segments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        /* RFM Matrix */
+        .rfm-matrix-container {
+            overflow-x: auto;
+        }
+        .rfm-matrix {
+            display: table;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+        .matrix-header, .matrix-row {
+            display: table-row;
+        }
+        .matrix-corner, .matrix-header-cell, .matrix-row-header, .matrix-cell {
+            display: table-cell;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+        .matrix-corner { background: #f8f9fa; }
+        .matrix-header-cell { background: #f8f9fa; font-weight: 600; font-size: 13px; }
+        .matrix-row-header { background: #f8f9fa; font-weight: 600; font-size: 13px; width: 80px; }
+        .matrix-cell {
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 140px;
+        }
+        .matrix-cell:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .matrix-cell .cell-name { font-weight: 600; margin-bottom: 4px; font-size: 14px; }
+        .matrix-cell .cell-count { font-size: 18px; font-weight: 700; }
+        .matrix-cell .cell-revenue { font-size: 12px; color: #6c757d; }
+
+        .matrix-cell.champions { background: #28a74515; border-color: #28a74540; }
+        .matrix-cell.loyal { background: #17a2b815; border-color: #17a2b840; }
+        .matrix-cell.potential { background: #ffc10715; border-color: #ffc10740; }
+        .matrix-cell.at-risk { background: #fd7e1415; border-color: #fd7e1440; }
+        .matrix-cell.dormant { background: #6c757d15; border-color: #6c757d40; }
+        .matrix-cell.lost { background: #dc354515; border-color: #dc354540; }
+
+        /* RFM Legend */
+        .rfm-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .rfm-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        .legend-color {
+            width: 12px; height: 12px;
+            border-radius: 3px;
+        }
+
+        /* ABC Cards V2 */
+        .abc-card-v2 {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .abc-card-v2.group-a { border-top: 4px solid #28a745; }
+        .abc-card-v2.group-b { border-top: 4px solid #ffc107; }
+        .abc-card-v2.group-c { border-top: 4px solid #6c757d; }
+
+        .abc-card-v2 .abc-icon { font-size: 32px; margin-bottom: 12px; }
+        .abc-card-v2.group-a .abc-icon { color: #28a745; }
+        .abc-card-v2.group-b .abc-icon { color: #b8a000; }
+        .abc-card-v2.group-c .abc-icon { color: #6c757d; }
+
+        .abc-card-v2 h4 { margin-bottom: 8px; }
+        .abc-card-v2 .abc-metric { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+        .abc-card-v2.group-a .abc-metric { color: #28a745; }
+        .abc-card-v2.group-b .abc-metric { color: #b8a000; }
+        .abc-card-v2.group-c .abc-metric { color: #6c757d; }
+
+        .abc-card-v2 p { font-size: 13px; color: #6c757d; margin-bottom: 12px; }
+        .abc-card-v2 .abc-count { font-weight: 600; font-size: 14px; }
+
+        /* Chart Container */
+        .chart-container {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .chart-header h5 { margin: 0; font-size: 15px; }
+        .chart-actions { display: flex; gap: 6px; }
+        .btn-icon {
+            background: none;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 6px 8px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover { background: #f8f9fa; color: #6B1F3F; }
+
+        .chart-legend {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .chart-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .chart-legend .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+        .chart-legend .legend-line {
+            width: 20px; height: 2px;
+            background: #4f46e5;
+        }
+
+        /* Tab Content */
+        .tab-content-container { padding: 4px 0; }
+
+        /* Spacing */
+        .crm-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .drawer-right { width: 100%; right: -100%; }
+            .rfm-legend { flex-direction: column; align-items: flex-start; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ШАПКА -->
+    <header class="bg-dark text-white p-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="text-decoration-none">
+                <img src="src/images/Лого.png" alt="Design Studio" class="logo-img">
+            </a>
+            <nav class="d-flex align-items-center justify-content-center flex-grow-1">
+                <a href="shop.html" class="text-white me-3 text-decoration-none">МАГАЗИН</a>
+                <a href="catalog.html" class="text-white me-3 text-decoration-none">КАТАЛОГ ТОВАРОВ</a>
+                <a href="order.html" class="text-white me-3 text-decoration-none">ЗАКАЗ ДИЗАЙНА</a>
+                <a href="register.html" class="text-white me-3 text-decoration-none" id="navRegister" style="display: none;">РЕГИСТРАЦИЯ</a>
+                <a href="profile.html" class="text-white me-3 text-decoration-none" id="navProfile" style="display: none;">ПРОФИЛЬ</a>
+                <a href="crm.html" class="text-white me-3 text-decoration-none" id="navCrm" style="display: none;">CRM</a>
+                <a href="marketing.html" class="text-white me-3 text-decoration-none" id="navMarketing" style="display: none;">МАРКЕТИНГ</a>
+                <a href="analytics.html" class="text-white me-3 text-decoration-none" id="navAnalytics" style="display: none;">АНАЛИТИКА</a>
+            </nav>
+            <div>
+                <a href="#" class="text-white text-decoration-none" id="navLogout">ВОЙТИ</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="crm-container">
+        <!-- Хлебные крошки -->
+        <div class="crm-breadcrumb">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Главная / </span>
+                    <span class="fw-bold">CRM Аналитика</span>
+                </div>
+                <div class="text-muted small">
+                    <i class="bi bi-calendar3"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEADER -->
+        <div class="crm-header">
+            <div class="d-flex justify-content-between align-items-end">
+                <div>
+                    <h1><i class="bi bi-people-fill"></i> CRM - Аналитика клиентов</h1>
+                    <p class="mb-0">Управление клиентской базой, сегментация, прогнозирование</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКИ -->
+        <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#stats-tab">
+                    <i class="bi bi-speedometer2"></i> Дашборд
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#customers-tab">
+                    <i class="bi bi-people"></i> Клиенты
+                    <span class="badge bg-secondary ms-1" id="tabCustomerCount">0</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#segments-tab">
+                    <i class="bi bi-diagram-3"></i> Сегменты
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#rfm-tab">
+                    <i class="bi bi-grid-3x3"></i> RFM-матрица
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#abc-tab">
+                    <i class="bi bi-pie-chart"></i> ABC-анализ
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#funnel-tab">
+                    <i class="bi bi-funnel"></i> Воронка
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#activity-tab">
+                    <i class="bi bi-calendar-heatmap"></i> Активность
+                </button>
+            </li>
+        </ul>
+
+        <!-- TAB CONTENT -->
+        <div class="tab-content">
+
+            <!-- ===== DASHBOARD TAB ===== -->
+            <div class="tab-pane fade show active" id="stats-tab">
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid" id="statsGrid">
+                    <div class="kpi-card primary" title="Общее количество зарегистрированных клиентов">
+                        <div class="kpi-header">
+                            <div class="kpi-icon"><i class="bi bi-people"></i></div>
+                            <div class="kpi-trend neutral" id="customerTrend">
+                                <i class="bi bi-dash"></i> —
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="totalCustomers">0</div>
+                        <div class="kpi-label">Всего клиентов</div>
+                    </div>
+
+                    <div class="kpi-card success" title="Сумма всех заказов за период">
+                        <div class="kpi-header">
+                            <div class="kpi-icon"><i class="bi bi-currency-dollar"></i></div>
+                            <div class="kpi-trend neutral" id="revenueTrend">
+                                <i class="bi bi-dash"></i> —
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="totalRevenue">0 BYN</div>
+                        <div class="kpi-label">Общая выручка</div>
+                    </div>
+
+                    <div class="kpi-card info" title="Средний чек = Выручка / Заказы">
+                        <div class="kpi-header">
+                            <div class="kpi-icon"><i class="bi bi-receipt"></i></div>
+                            <div class="kpi-trend neutral" id="avgCheckTrend">
+                                <i class="bi bi-dash"></i> —
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="avgOrderValue">0 BYN</div>
+                        <div class="kpi-label">Средний чек</div>
+                    </div>
+
+                    <div class="kpi-card warning" title="LTV — сколько денег клиент приносит за всё время">
+                        <div class="kpi-header">
+                            <div class="kpi-icon"><i class="bi bi-person-heart"></i></div>
+                            <div class="kpi-trend neutral" id="clvTrend">
+                                <i class="bi bi-dash"></i> —
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="avgCustomerValue">0 BYN</div>
+                        <div class="kpi-label">LTV клиента</div>
+                    </div>
+
+                    <div class="kpi-card danger" title="Количество оформленных заказов">
+                        <div class="kpi-header">
+                            <div class="kpi-icon"><i class="bi bi-cart-check"></i></div>
+                            <div class="kpi-trend neutral" id="orderTrend">
+                                <i class="bi bi-dash"></i> —
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="totalOrders">0</div>
+                        <div class="kpi-label">Всего заказов</div>
+                    </div>
+
+                    <div class="kpi-card secondary" title="Процент посетителей, ставших покупателями">
+                        <div class="kpi-header">
+                            <div class="kpi-icon"><i class="bi bi-arrow-repeat"></i></div>
+                            <div class="kpi-trend neutral" id="conversionTrend">
+                                <i class="bi bi-dash"></i> —
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="conversionRate">0%</div>
+                        <div class="kpi-label">Конверсия</div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h5><i class="bi bi-pie-chart"></i> Распределение по сегментам</h5>
+                                <div class="chart-actions">
+                                    <button class="btn-icon" onclick="exportChart('segmentPieChart')" title="Скачать PNG">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="segmentPieChartContainer">
+                                <canvas id="segmentPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h5><i class="bi bi-bar-chart"></i> Выручка по сегментам</h5>
+                                <div class="chart-actions">
+                                    <button class="btn-icon" onclick="exportChart('revenueBarChart')" title="Скачать PNG">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <canvas id="revenueBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Trend Chart -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h5><i class="bi bi-graph-up-arrow"></i> Динамика выручки</h5>
+                                <div class="chart-legend">
+                                    <span class="legend-item"><span class="legend-dot" style="background: #6B1F3F;"></span> Текущий период</span>
+                                    <span class="legend-item"><span class="legend-dot" style="background: #adb5bd;"></span> Прошлый период</span>
+                                </div>
+                            </div>
+                            <canvas id="revenueTrendChart" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Segment Overview -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5><i class="bi bi-lightning"></i> Быстрый обзор сегментов</h5>
+                            <div class="segments-quick-view" id="segmentsQuickView">
+                                <!-- Заполняется динамически -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CUSTOMERS TAB ===== -->
+            <div class="tab-pane fade" id="customers-tab">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <h3 class="mb-0"><i class="bi bi-people"></i> Клиенты</h3>
+                        <span class="text-muted" id="customersTotalInfo">(всего 0)</span>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-primary btn-sm" onclick="exportCustomers('excel')">
+                            <i class="bi bi-file-excel"></i> Excel
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="exportCustomers('pdf')">
+                            <i class="bi bi-file-pdf"></i> PDF
+                        </button>
+                        <!-- Фильтр — ИСПРАВЛЕНО: NEW → BASIC -->
+                        <select class="form-select form-select-sm" id="customerSegmentFilter" onchange="filterCustomers()" style="width: 150px;">
+                            <option value="">Все сегменты</option>
+                            <option value="VIP">VIP</option>
+                            <option value="PREMIUM">PREMIUM</option>
+                            <option value="ACTIVE">Активные</option>
+                            <option value="BASIC">Basic</option>
+                            <option value="LOST">Потерянные</option>
+                        </select>
+                        <select class="form-select form-select-sm" id="customerSpentFilter" onchange="filterCustomers()" style="width: 160px;">
+                            <option value="">Любая сумма</option>
+                            <option value="0-5000">0 - 5 000 BYN</option>
+                            <option value="5000-20000">5 000 - 20 000 BYN</option>
+                            <option value="20000-50000">20 000 - 50 000 BYN</option>
+                            <option value="50000+">50 000+ BYN</option>
+                        </select>
+                        <div class="input-group input-group-sm" style="width: 220px;">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Поиск..." id="customerSearch" oninput="filterCustomers()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customers Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-customers">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="form-check-input" id="selectAllCustomers"></th>
+                                <th>Клиент</th>
+                                <th>Email</th>
+                                <th>Сегмент</th>
+                                <th>Заказов</th>
+                                <th>Траты</th>
+                                <th>Ср. чек</th>
+                                <th>RFM</th>
+                                <th>CLV</th>
+                                <th>Последний заказ</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <!-- Заполняется динамически -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="text-muted small">
+                        Показано <span id="customersShown">0</span> из <span id="customersTotal">0</span> клиентов
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0" id="customersPagination">
+                            <!-- Заполняется динамически -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- ===== SEGMENTS TAB ===== -->
+            <div class="tab-pane fade" id="segments-tab">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="mb-1"><i class="bi bi-diagram-3"></i> Сегменты клиентов</h3>
+                        <p class="text-muted mb-0 small">Автоматическая сегментация на основе поведения</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openSegmentModal()">
+                        <i class="bi bi-plus-circle"></i> Создать свой сегмент
+                    </button>
+                </div>
+
+                <!-- Легенда — ИСПРАВЛЕНО -->
+                <div class="segment-legend mb-4">
+                    <h6><i class="bi bi-info-circle"></i> Критерии сегментации</h6>
+                    <div class="legend-row">
+                        <span class="legend-dot" style="background:#28a745;"></span>
+                        <strong>VIP</strong> — статус VIP ИЛИ траты ≥50,000 BYN ИЛИ >20 заказов
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-dot" style="background:#17a2b8;"></span>
+                        <strong>PREMIUM</strong> — статус PREMIUM ИЛИ траты ≥20,000 BYN ИЛИ >10 заказов
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-dot" style="background:#6c757d;"></span>
+                        <strong>BASIC</strong> — ВСЕ пользователи со статусом BASIC в БД
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-dot" style="background:#007bff;"></span>
+                        <strong>ACTIVE</strong> — BASIC пользователи с активностью в последние 30 дней (фильтр)
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-dot" style="background:#dc3545;"></span>
+                        <strong>LOST</strong> — BASIC пользователи без активности >30 дней (фильтр)
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Standard Segments -->
+                    <div class="col-lg-4">
+                        <h5 class="mb-3"><i class="bi bi-star"></i> Стандартные сегменты</h5>
+
+                        <!-- VIP -->
+                        <div class="segment-card-v2 vip" onclick="filterCustomersBySegment('VIP')">
+                            <div class="segment-card-header">
+                                <div class="segment-icon"><i class="bi bi-gem"></i></div>
+                                <div class="segment-info">
+                                    <h5>VIP <span class="badge bg-light text-dark">Премиум</span></h5>
+                                    <p class="mb-0">Ключевые клиенты с максимальными тратами</p>
+                                </div>
+                            </div>
+                            <div class="segment-stats">
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="vipCount">0</div>
+                                    <div class="stat-label">клиентов</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="vipRevenue">0 BYN</div>
+                                    <div class="stat-label">выручка</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="vipAvgCheck">0 BYN</div>
+                                    <div class="stat-label">ср. чек</div>
+                                </div>
+                            </div>
+                            <div class="segment-bar">
+                                <div class="bar-fill" id="vipBar" style="width: 0%"></div>
+                            </div>
+                            <div class="segment-actions">
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); showSegmentCustomers('VIP')">
+                                    <i class="bi bi-people"></i> Показать
+                                </button>
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); createCampaignForSegment('VIP')">
+                                    <i class="bi bi-megaphone"></i> Кампания
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PREMIUM -->
+                        <div class="segment-card-v2 premium" onclick="filterCustomersBySegment('PREMIUM')">
+                            <div class="segment-card-header">
+                                <div class="segment-icon"><i class="bi bi-star-fill"></i></div>
+                                <div class="segment-info">
+                                    <h5>PREMIUM</h5>
+                                    <p class="mb-0">Постоянные клиенты с регулярными покупками</p>
+                                </div>
+                            </div>
+                            <div class="segment-stats">
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="premiumCount">0</div>
+                                    <div class="stat-label">клиентов</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="premiumRevenue">0 BYN</div>
+                                    <div class="stat-label">выручка</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="premiumAvgCheck">0 BYN</div>
+                                    <div class="stat-label">ср. чек</div>
+                                </div>
+                            </div>
+                            <div class="segment-bar">
+                                <div class="bar-fill" id="premiumBar" style="width: 0%"></div>
+                            </div>
+                            <div class="segment-actions">
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); showSegmentCustomers('PREMIUM')">
+                                    <i class="bi bi-people"></i> Показать
+                                </button>
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); createCampaignForSegment('PREMIUM')">
+                                    <i class="bi bi-megaphone"></i> Кампания
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ACTIVE -->
+                        <div class="segment-card-v2 active" onclick="filterCustomersBySegment('ACTIVE')">
+                            <div class="segment-card-header">
+                                <div class="segment-icon"><i class="bi bi-activity"></i></div>
+                                <div class="segment-info">
+                                    <h5>ACTIVE</h5>
+                                    <p class="mb-0">Активные клиенты (последние 30 дней)</p>
+                                </div>
+                            </div>
+                            <div class="segment-stats">
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="activeCount">0</div>
+                                    <div class="stat-label">клиентов</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="activeRevenue">0 BYN</div>
+                                    <div class="stat-label">выручка</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="activeAvgCheck">0 BYN</div>
+                                    <div class="stat-label">ср. чек</div>
+                                </div>
+                            </div>
+                            <div class="segment-bar">
+                                <div class="bar-fill" id="activeBar" style="width: 0%"></div>
+                            </div>
+                            <div class="segment-actions">
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); showSegmentCustomers('ACTIVE')">
+                                    <i class="bi bi-people"></i> Показать
+                                </button>
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); createCampaignForSegment('ACTIVE')">
+                                    <i class="bi bi-megaphone"></i> Кампания
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- BASIC — ИСПРАВЛЕНО: NEW → BASIC -->
+                        <div class="segment-card-v2 basic" onclick="filterCustomersBySegment('BASIC')">
+                            <div class="segment-card-header">
+                                <div class="segment-icon"><i class="bi bi-person-plus"></i></div>
+                                <div class="segment-info">
+                                    <h5>BASIC</h5>
+                                    <p class="mb-0">Новые клиенты без заказов</p>
+                                </div>
+                            </div>
+                            <div class="segment-stats">
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="basicCount">0</div>
+                                    <div class="stat-label">клиентов</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="basicRevenue">0 BYN</div>
+                                    <div class="stat-label">выручка</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="basicAvgCheck">0 BYN</div>
+                                    <div class="stat-label">ср. чек</div>
+                                </div>
+                            </div>
+                            <div class="segment-bar">
+                                <div class="bar-fill" id="basicBar" style="width: 0%"></div>
+                            </div>
+                            <div class="segment-actions">
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); showSegmentCustomers('BASIC')">
+                                    <i class="bi bi-people"></i> Показать
+                                </button>
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); createCampaignForSegment('BASIC')">
+                                    <i class="bi bi-megaphone"></i> Кампания
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- LOST -->
+                        <div class="segment-card-v2 lost" onclick="filterCustomersBySegment('LOST')">
+                            <div class="segment-card-header">
+                                <div class="segment-icon"><i class="bi bi-emoji-dizzy"></i></div>
+                                <div class="segment-info">
+                                    <h5>LOST</h5>
+                                    <p class="mb-0">Без активности более 30 дней</p>
+                                </div>
+                            </div>
+                            <div class="segment-stats">
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="lostCount">0</div>
+                                    <div class="stat-label">клиентов</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="lostRevenue">0 BYN</div>
+                                    <div class="stat-label">выручка</div>
+                                </div>
+                                <div class="segment-stat">
+                                    <div class="stat-value" id="lostAvgCheck">0 BYN</div>
+                                    <div class="stat-label">ср. чек</div>
+                                </div>
+                            </div>
+                            <div class="segment-bar">
+                                <div class="bar-fill" id="lostBar" style="width: 0%"></div>
+                            </div>
+                            <div class="segment-actions">
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); showSegmentCustomers('LOST')">
+                                    <i class="bi bi-people"></i> Показать
+                                </button>
+                                <button class="btn btn-sm btn-light" onclick="event.stopPropagation(); createCampaignForSegment('LOST')">
+                                    <i class="bi bi-megaphone"></i> Кампания
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Segments -->
+                    <div class="col-lg-8">
+                        <h5 class="mb-3"><i class="bi bi-folder-plus"></i> Пользовательские сегменты</h5>
+                        <div id="rfmSegmentsList" class="custom-segments-grid">
+                            <!-- Заполняется динамически -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== RFM MATRIX TAB ===== -->
+            <div class="tab-pane fade" id="rfm-tab">
+                <div class="tab-content-container">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h3 class="mb-1"><i class="bi bi-grid-3x3"></i> RFM-матрица</h3>
+                            <p class="text-muted mb-0">Классификация клиентов по Recency, Frequency, Monetary</p>
+                        </div>
+                        <div class="rfm-legend">
+                            <div class="legend-item"><span class="legend-color" style="background: #28a745;"></span> Champions</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #17a2b8;"></span> Loyal</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #ffc107;"></span> Potential</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #fd7e14;"></span> At Risk</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #6c757d;"></span> Dormant</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #dc3545;"></span> Lost</div>
+                        </div>
+                    </div>
+
+                    <!-- RFM Explanation -->
+                    <div class="rfm-explanation mb-4">
+                        <div class="alert alert-secondary">
+                            <h6><i class="bi bi-book"></i> Что такое RFM-анализ?</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong>R</strong> — Recency (Давность)<br>
+                                    <small class="text-muted">Дней с последнего заказа. Чем меньше, тем лучше.</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>F</strong> — Frequency (Частота)<br>
+                                    <small class="text-muted">Общее число заказов. Чем больше, тем лучше.</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>M</strong> — Monetary (Деньги)<br>
+                                    <small class="text-muted">Общая сумма трат. Чем больше, тем лучше.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RFM Matrix Grid -->
+                    <div class="rfm-matrix-container">
+                        <div class="rfm-matrix">
+                            <div class="matrix-header">
+                                <div class="matrix-corner"></div>
+                                <div class="matrix-header-cell">F: Редко</div>
+                                <div class="matrix-header-cell">F: Средне</div>
+                                <div class="matrix-header-cell">F: Часто</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-row-header">R: Недавно</div>
+                                <div class="matrix-cell dormant" onclick="showRfmSegment('Dormant')">
+                                    <div class="cell-name">Dormant</div>
+                                    <div class="cell-count" id="rfm-dormant-count">0</div>
+                                    <div class="cell-revenue" id="rfm-dormant-revenue">0 BYN</div>
+                                </div>
+                                <div class="matrix-cell potential" onclick="showRfmSegment('Potential')">
+                                    <div class="cell-name">Potential</div>
+                                    <div class="cell-count" id="rfm-potential-count">0</div>
+                                    <div class="cell-revenue" id="rfm-potential-revenue">0 BYN</div>
+                                </div>
+                                <div class="matrix-cell champions" onclick="showRfmSegment('Champions')">
+                                    <div class="cell-name">Champions</div>
+                                    <div class="cell-count" id="rfm-champions-count">0</div>
+                                    <div class="cell-revenue" id="rfm-champions-revenue">0 BYN</div>
+                                </div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-row-header">R: Средне</div>
+                                <div class="matrix-cell at-risk" onclick="showRfmSegment('At Risk')">
+                                    <div class="cell-name">At Risk</div>
+                                    <div class="cell-count" id="rfm-atrisk-count">0</div>
+                                    <div class="cell-revenue" id="rfm-atrisk-revenue">0 BYN</div>
+                                </div>
+                                <div class="matrix-cell loyal" onclick="showRfmSegment('Loyal')">
+                                    <div class="cell-name">Loyal</div>
+                                    <div class="cell-count" id="rfm-loyal-count">0</div>
+                                    <div class="cell-revenue" id="rfm-loyal-revenue">0 BYN</div>
+                                </div>
+                                <div class="matrix-cell champions" onclick="showRfmSegment('Champions')">
+                                    <div class="cell-name">Champions</div>
+                                    <div class="cell-count" id="rfm-champions2-count">0</div>
+                                    <div class="cell-revenue" id="rfm-champions2-revenue">0 BYN</div>
+                                </div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-row-header">R: Давно</div>
+                                <div class="matrix-cell lost" onclick="showRfmSegment('Lost')">
+                                    <div class="cell-name">Lost</div>
+                                    <div class="cell-count" id="rfm-lost-count">0</div>
+                                    <div class="cell-revenue" id="rfm-lost-revenue">0 BYN</div>
+                                </div>
+                                <div class="matrix-cell at-risk" onclick="showRfmSegment('At Risk')">
+                                    <div class="cell-name">At Risk</div>
+                                    <div class="cell-count" id="rfm-atrisk2-count">0</div>
+                                    <div class="cell-revenue" id="rfm-atrisk2-revenue">0 BYN</div>
+                                </div>
+                                <div class="matrix-cell loyal" onclick="showRfmSegment('Loyal')">
+                                    <div class="cell-name">Loyal</div>
+                                    <div class="cell-count" id="rfm-loyal2-count">0</div>
+                                    <div class="cell-revenue" id="rfm-loyal2-revenue">0 BYN</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RFM Recommendations -->
+                    <div class="rfm-recommendations mt-4" id="rfmRecommendations">
+                        <!-- Заполняется динамически -->
+                    </div>
+
+                    <!-- RFM Details -->
+                    <div class="mt-4">
+                        <h5>Детали RFM-сегментов</h5>
+                        <div id="rfmAnalysisResults"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ABC ANALYSIS TAB ===== -->
+            <div class="tab-pane fade" id="abc-tab">
+                <div class="tab-content-container">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h3 class="mb-1"><i class="bi bi-pie-chart"></i> ABC-анализ</h3>
+                            <p class="text-muted mb-0">Парето-принцип: 20% клиентов приносят 80% выручки</p>
+                        </div>
+                        <div class="abc-summary" id="abcSummary">
+                            <!-- Заполняется динамически -->
+                        </div>
+                    </div>
+
+                    <!-- ABC Explanation -->
+                    <div class="abc-formula mb-4">
+                        <div class="alert alert-warning">
+                            <h6><i class="bi bi-calculator"></i> Правило Парето (80/20)</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="formula-box">
+                                        <div class="formula-title">Группа A</div>
+                                        <div class="formula-code">20% клиентов → 80% выручки</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="formula-box">
+                                        <div class="formula-title">Группа B</div>
+                                        <div class="formula-code">30% клиентов → 15% выручки</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="formula-box">
+                                        <div class="formula-title">Группа C</div>
+                                        <div class="formula-code">50% клиентов → 5% выручки</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ABC Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="abc-card-v2 group-a">
+                                <div class="abc-icon"><i class="bi bi-trophy"></i></div>
+                                <h4>Группа A</h4>
+                                <div class="abc-metric">20% клиентов → 80% выручки</div>
+                                <p>Ключевые клиенты. Требуют максимального внимания и персонального подхода.</p>
+                                <div class="abc-count" id="abcACount">0 клиентов</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="abc-card-v2 group-b">
+                                <div class="abc-icon"><i class="bi bi-graph-up"></i></div>
+                                <h4>Группа B</h4>
+                                <div class="abc-metric">30% клиентов → 15% выручки</div>
+                                <p>Перспективные клиенты. Стимулировать к увеличению покупок.</p>
+                                <div class="abc-count" id="abcBCount">0 клиентов</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="abc-card-v2 group-c">
+                                <div class="abc-icon"><i class="bi bi-people"></i></div>
+                                <h4>Группа C</h4>
+                                <div class="abc-metric">50% клиентов → 5% выручки</div>
+                                <p>Массовые клиенты. Автоматизированное обслуживание.</p>
+                                <div class="abc-count" id="abcCCount">0 клиентов</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pareto Chart -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h5><i class="bi bi-bar-chart-line"></i> Диаграмма Парето</h5>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="legend-dot" style="background: #28a745;"></span> Доля выручки</span>
+                                <span class="legend-item"><span class="legend-line"></span> Накопленный %</span>
+                            </div>
+                        </div>
+                        <canvas id="paretoChart" height="100"></canvas>
+                    </div>
+
+                    <!-- ABC Details -->
+                    <div class="mt-4" id="abcAnalysisResults"></div>
+                </div>
+            </div>
+
+            <!-- ===== FUNNEL TAB ===== -->
+            <div class="tab-pane fade" id="funnel-tab">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4><i class="bi bi-funnel"></i> Воронка продаж</h4>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary" onclick="loadFunnel()">
+                            <i class="bi bi-arrow-clockwise"></i> Обновить
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="chart-container">
+                            <div class="funnel-visualization" id="funnelVisualization">
+                                <div class="text-center py-5 text-muted">
+                                    <i class="bi bi-hourglass-split" style="font-size: 48px;"></i>
+                                    <p class="mt-2">Загрузка данных воронки...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="chart-container">
+                            <h6 class="mb-3"><i class="bi bi-graph-up"></i> Ключевые метрики</h6>
+                            <div class="funnel-metrics-grid" id="funnelMetrics">
+                                <div class="funnel-metric-card">
+                                    <div class="metric-icon bg-success-light">
+                                        <i class="bi bi-graph-up-arrow"></i>
+                                    </div>
+                                    <div class="metric-info">
+                                        <div class="metric-label">Общая конверсия</div>
+                                        <div class="metric-value" id="funnelTotalConversion">0%</div>
+                                    </div>
+                                </div>
+                                <div class="funnel-metric-card">
+                                    <div class="metric-icon bg-info-light">
+                                        <i class="bi bi-cart-check"></i>
+                                    </div>
+                                    <div class="metric-info">
+                                        <div class="metric-label">Конверсия в корзину</div>
+                                        <div class="metric-value" id="funnelCartConversion">0%</div>
+                                    </div>
+                                </div>
+                                <div class="funnel-metric-card">
+                                    <div class="metric-icon bg-warning-light">
+                                        <i class="bi bi-currency-dollar"></i>
+                                    </div>
+                                    <div class="metric-info">
+                                        <div class="metric-label">Средний чек</div>
+                                        <div class="metric-value" id="funnelAvgCheck">0 BYN</div>
+                                    </div>
+                                </div>
+                                <div class="funnel-metric-card">
+                                    <div class="metric-icon bg-danger-light">
+                                        <i class="bi bi-cart-x"></i>
+                                    </div>
+                                    <div class="metric-info">
+                                        <div class="metric-label">Потери в корзине</div>
+                                        <div class="metric-value" id="funnelCartLoss">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Дополнительная информация об этапах -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h6 class="mb-3"><i class="bi bi-bar-chart-steps"></i> Детальная статистика</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Этап</th>
+                                            <th>Количество</th>
+                                            <th>Конверсия</th>
+                                            <th>Потеряно</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="funnel-row-visits">
+                                            <td><i class="bi bi-eye text-primary"></i> Посетители</td>
+                                            <td id="funnel-visits-display">0</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr id="funnel-row-carts">
+                                            <td><i class="bi bi-cart text-warning"></i> Корзины</td>
+                                            <td id="funnel-carts-display">0</td>
+                                            <td id="funnel-cart-percent-display">0%</td>
+                                            <td id="funnel-cart-loss-detail">0%</td>
+                                        </tr>
+                                        <tr id="funnel-row-orders">
+                                            <td><i class="bi bi-receipt text-info"></i> Заказы</td>
+                                            <td id="funnel-orders-display">0</td>
+                                            <td id="funnel-order-percent-display">0%</td>
+                                            <td id="funnel-order-loss-detail">0%</td>
+                                        </tr>
+                                        <tr id="funnel-row-paid">
+                                            <td><i class="bi bi-credit-card text-success"></i> Оплачено</td>
+                                            <td id="funnel-paid-display">0</td>
+                                            <td id="funnel-paid-percent-display">0%</td>
+                                            <td id="funnel-paid-loss-detail">0%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ACTIVITY TAB ===== -->
+            <div class="tab-pane fade" id="activity-tab">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4><i class="bi bi-calendar-heatmap"></i> Карта активности</h4>
+                    <div class="d-flex gap-2">
+                        <select id="activityPeriodFilter" class="form-select form-select-sm" style="width: 150px;">
+                            <option value="week">За неделю</option>
+                            <option value="month" selected>За месяц</option>
+                            <option value="quarter">За квартал</option>
+                            <option value="year">За год</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary" onclick="loadActivityStats()">
+                            <i class="bi bi-arrow-clockwise"></i> Обновить
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Карточки статистики -->
+                        <div class="activity-stats-row mb-4" id="activityStatsCards">
+                            <div class="activity-stat-card">
+                                <div class="stat-title">Среднее в день</div>
+                                <div class="stat-value" id="avgDailyOrders">—</div>
+                                <div class="stat-subtitle">заказов</div>
+                            </div>
+                            <div class="activity-stat-card">
+                                <div class="stat-title">Самый активный день</div>
+                                <div class="stat-value" id="mostActiveDay">—</div>
+                                <div class="stat-subtitle" id="mostActiveDayOrders">—</div>
+                            </div>
+                            <div class="activity-stat-card">
+                                <div class="stat-title">Дней без заказов</div>
+                                <div class="stat-value" id="inactiveDays">—</div>
+                                <div class="stat-subtitle">дней</div>
+                            </div>
+                            <div class="activity-stat-card">
+                                <div class="stat-title">Всего заказов</div>
+                                <div class="stat-value" id="totalOrdersCount">—</div>
+                                <div class="stat-subtitle">за период</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Карта активности (тепловая карта) -->
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h5><i class="bi bi-calendar-heatmap"></i> Тепловая карта активности</h5>
+                                <div class="chart-legend">
+                                    <span>Меньше</span>
+                                    <div class="legend-cells">
+                                        <div class="legend-cell intensity-0"></div>
+                                        <div class="legend-cell intensity-1"></div>
+                                        <div class="legend-cell intensity-2"></div>
+                                        <div class="legend-cell intensity-3"></div>
+                                        <div class="legend-cell intensity-4"></div>
+                                    </div>
+                                    <span>Больше</span>
+                                </div>
+                            </div>
+                            <div id="activityHeatmap">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Загрузка...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Загрузка данных...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== MODALS ===== -->
+
+    <!-- Customer Detail Drawer -->
+    <div class="drawer-overlay" id="customerDrawerOverlay" onclick="closeCustomerDrawer()"></div>
+    <div class="drawer-right" id="customerDrawer">
+        <div class="drawer-header">
+            <div class="d-flex align-items-center gap-3">
+                <div class="customer-avatar" id="drawerAvatar">MS</div>
+                <div>
+                    <h4 class="mb-1" id="drawerName">Клиент</h4>
+                    <span class="badge" id="drawerSegment">BASIC</span>
+                </div>
+            </div>
+            <button class="btn-close" onclick="closeCustomerDrawer()"></button>
+        </div>
+        <div class="drawer-body">
+            <div class="drawer-section">
+                <h6>Метрики</h6>
+                <div id="drawerMetrics"></div>
+            </div>
+            <div class="drawer-section">
+                <h6>История заказов</h6>
+                <div id="drawerOrders"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segment Create/Edit Modal -->
+    <div class="modal" id="segmentModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="segmentModalTitle">Создать сегмент</h5>
+                <button type="button" class="btn-close" onclick="closeSegmentModal()"></button>
+            </div>
+            <form id="segmentForm">
+                <div class="modal-body">
+                    <input type="hidden" id="segmentId">
+                    <div class="mb-3">
+                        <label class="form-label">Название *</label>
+                        <input type="text" class="form-control" id="segmentName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea class="form-control" id="segmentDescription" rows="2"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Цвет</label>
+                            <input type="color" class="form-control form-control-color" id="segmentColor" value="#6B1F3F">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Иконка</label>
+                            <select class="form-select" id="segmentIcon">
+                                <option value="bi-folder">📁 Папка</option>
+                                <option value="bi-star">⭐ Звезда</option>
+                                <option value="bi-heart">❤️ Сердце</option>
+                                <option value="bi-bell">🔔 Колокол</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6>Условия</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Мин. заказов</label>
+                            <input type="number" class="form-control" id="segmentMinOrders" value="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Макс. заказов</label>
+                            <input type="number" class="form-control" id="segmentMaxOrders" value="999">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Мин. траты (BYN)</label>
+                            <input type="number" class="form-control" id="segmentMinSpent" value="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Макс. траты (BYN)</label>
+                            <input type="number" class="form-control" id="segmentMaxSpent" value="999999">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeSegmentModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center mb-4">
+                        <a href="index.html" class="text-decoration-none">
+                            <img src="src/images/Лого.png" alt="Design Studio" class="logo-img-footer">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h5>МАГАЗИН</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="catalog.html?category=Гостиная" class="text-white text-decoration-none">Гостиная</a></li>
+                        <li><a href="catalog.html?category=Спальня" class="text-white text-decoration-none">Спальня</a></li>
+                        <li><a href="catalog.html?category=Кухня" class="text-white text-decoration-none">Кухня</a></li>
+                        <li><a href="catalog.html?category=Офис" class="text-white text-decoration-none">Офис</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>ЗАКАЗ ДИЗАЙНА</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="order.html" class="text-white text-decoration-none">Заказать</a></li>
+                        <li><a href="order.html" class="text-white text-decoration-none">Как это работает?</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="text-center">ПОДПИСЫВАЙТЕСЬ НА НАШИ СОЦИАЛЬНЫЕ СЕТИ</h5>
+                    <div class="d-flex justify-content-center">
+                        <a href="https://pinterest.com" class="text-white me-3 text-decoration-none">
+                            <svg class="social-icon" viewBox="0 0 24 24">
+                                <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.219-.937 1.406-5.957 1.406-5.957s-.359-.719-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245               3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+                            </svg>
+                        </a>
+                        <a href="https://instagram.com" class="text-white me-3 text-decoration-none">
+                            <svg class="social-icon" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="https://twitter.com" class="text-white text-decoration-none">
+                            <svg class="social-icon" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="src/js/app.js"></script>
+    <script src="src/js/crm.js"></script>
+</body>
+</html>

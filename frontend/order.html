@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Заказ дизайна - Design Studio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="src/css/styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .logo-img-footer { height: 150px; width: auto; transition: opacity 0.3s ease; }
+    .logo-img-footer:hover { opacity: 0.8; }
+    .logo-img { height: 60px; width: auto; transition: opacity 0.3s ease; }
+    .logo-img:hover { opacity: 0.8; }
+
+    .social-icon { fill: #f1f1f1; width: 32px; height: 32px; transition: fill 0.3s ease; }
+    .social-icon:hover { fill: #ccc; }
+
+    /* ========== ФОРМА ЗАКАЗА ДИЗАЙНА ========== */
+    .order-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .order-form-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .order-form-header {
+      background: linear-gradient(135deg, #6B1F3F 0%, #8B2F5F 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .order-form-header h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.75rem;
+    }
+
+    .order-form-header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .order-form-body {
+      padding: 2rem;
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-section-title i {
+      color: #6B1F3F;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+      color: #333;
+    }
+
+    .form-label .required {
+      color: #dc3545;
+    }
+
+    .form-control, .form-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #6B1F3F;
+      box-shadow: 0 0 0 3px rgba(107, 31, 63, 0.1);
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Стили для тарифов */
+    .tariff-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .tariff-options {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tariff-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .tariff-card:hover {
+      border-color: #6B1F3F;
+    }
+
+    .tariff-card.selected {
+      border-color: #6B1F3F;
+      background: rgba(107, 31, 63, 0.05);
+    }
+
+    .tariff-card input[type="radio"] {
+      display: none;
+    }
+
+    .tariff-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+
+    .tariff-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #6B1F3F;
+      margin-bottom: 0.5rem;
+    }
+
+    .tariff-features {
+      font-size: 0.85rem;
+      color: #666;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tariff-features li {
+      padding: 0.25rem 0;
+    }
+
+    /* Стили для загрузки фото */
+    .photo-upload-area {
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .photo-upload-area:hover, .photo-upload-area.dragover {
+      border-color: #6B1F3F;
+      background: rgba(107, 31, 63, 0.02);
+    }
+
+    .photo-upload-area input[type="file"] {
+      display: none;
+    }
+
+    .photo-upload-icon {
+      font-size: 3rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+
+    .photo-upload-text {
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .photo-upload-hint {
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    .photo-preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .photo-preview {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #e0e0e0;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-preview-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 24px;
+    }
+
+    /* Стили для выбора товаров */
+    .products-selection-area {
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .products-selection-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .products-selection-title {
+      font-weight: 600;
+      color: #333;
+    }
+
+        .products-selection-count {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .product-select-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      border: 1px solid #f0f0f0;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .product-select-card:hover {
+      background: #f8f9fa;
+      border-color: #e0e0e0;
+    }
+
+    .product-select-card.selected {
+      background: rgba(107, 31, 63, 0.05);
+      border-color: #6B1F3F;
+    }
+
+    .product-select-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: #6B1F3F;
+    }
+
+    .product-select-image {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #f0f0f0;
+    }
+
+    .product-select-info {
+      flex-grow: 1;
+    }
+
+    .product-select-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+    }
+
+    .product-select-price {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    /* Кнопка отправки */
+    .submit-section {
+      padding: 1.5rem 2rem 2rem;
+      background: #f8f9fa;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #6B1F3F 0%, #8B2F5F 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 31, 63, 0.3);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Toast */
+    .custom-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .custom-toast.show { opacity: 1; transform: translateY(0); }
+    .custom-toast.error { background-color: #dc3545; }
+    .custom-toast .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+<!-- ШАПКА -->
+<header class="bg-dark text-white p-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="index.html" class="text-decoration-none">
+            <img src="src/images/Лого.png" alt="Design Studio" class="logo-img">
+        </a>
+        <nav class="d-flex align-items-center justify-content-center flex-grow-1">
+            <a href="shop.html" class="text-white me-3 text-decoration-none">МАГАЗИН</a>
+            <a href="catalog.html" class="text-white me-3 text-decoration-none">КАТАЛОГ ТОВАРОВ</a>
+            <a href="order.html" class="text-white me-3 text-decoration-none">ЗАКАЗ ДИЗАЙНА</a>
+            <a href="register.html" class="text-white me-3 text-decoration-none" id="navRegister" style="display: none;">РЕГИСТРАЦИЯ</a>
+            
+            <!-- ОДИН элемент "ПРОФИЛЬ" - ссылка меняется в зависимости от роли -->
+            <a href="profile.html" class="text-white me-3 text-decoration-none" id="navProfile" style="display: none;">ПРОФИЛЬ</a>
+            
+            <a href="crm.html" class="text-white me-3 text-decoration-none" id="navCrm" style="display: none;">CRM</a>
+            <a href="marketing.html" class="text-white me-3 text-decoration-none" id="navMarketing" style="display: none;">МАРКЕТИНГ</a>
+            <a href="analytics.html" class="text-white me-3 text-decoration-none" id="navAnalytics" style="display: none;">АНАЛИТИКА</a>
+        </nav>
+        <div>
+            <a href="#" class="text-white text-decoration-none" id="navLogout">ВОЙТИ</a>
+        </div>
+    </div>
+</header>
+
+<!-- ФОРМА ЗАКАЗА ДИЗАЙНА -->
+<div class="order-container">
+  <div class="order-form-card">
+    <div class="order-form-header">
+      <h1><i class="bi bi-palette"></i> Заказ дизайна интерьера</h1>
+      <p>Создайте уникальный дизайн вашего помещения</p>
+    </div>
+    
+    <form id="designOrderForm" class="order-form-body">
+      <!-- Секция: Параметры помещения -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="bi bi-house-door"></i> Параметры помещения
+        </h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Тип помещения <span class="required">*</span></label>
+            <select class="form-select" name="roomType" required>
+              <option value="">Выберите тип</option>
+              <option value="Гостиная">Гостиная</option>
+              <option value="Спальня">Спальня</option>
+              <option value="Кухня">Кухня</option>
+              <option value="Ванная">Ванная комната</option>
+              <option value="Офис">Офис / Кабинет</option>
+              <option value="Детская">Детская комната</option>
+              <option value="Прихожая">Прихожая</option>
+              <option value="Балкон">Балкон / Лоджия</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Стиль дизайна <span class="required">*</span></label>
+            <select class="form-select" name="designStyle" required>
+              <option value="">Выберите стиль</option>
+              <option value="Современный">Современный</option>
+              <option value="Минимализм">Минимализм</option>
+              <option value="Классический">Классический</option>
+              <option value="Скандинавский">Скандинавский</option>
+              <option value="Лофт">Лофт</option>
+              <option value="Прованс">Прованс</option>
+              <option value="Модерн">Модерн</option>
+              <option value="Хай-тек">Хай-тек</option>
+              <option value="Арт-деко">Арт-деко</option>
+              <option value="Восточный">Восточный</option>
+              <option value="Индустриальный">Индустриальный</option>
+              <option value="Эко-стиль">Эко-стиль</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Секция: Выбор тарифа -->
+      <div class="form-section">
+          <h3 class="form-section-title">
+              <i class="bi bi-credit-card"></i> Выберите тариф
+          </h3>
+          <div class="tariff-options">
+              <label class="tariff-card" data-tariff="basic">
+                  <input type="radio" name="tariff" value="basic" required>
+                  <div class="tariff-name">Базовый</div>
+                  <div class="tariff-price">1 000 BYN</div>
+                  <ul class="tariff-features">
+                      <li>Концепция интерьера</li>
+                      <li>2D-план</li>
+                      <li>Срок: 7 дней</li>
+                  </ul>
+              </label>
+              <label class="tariff-card" data-tariff="standard">
+                  <input type="radio" name="tariff" value="standard">
+                  <div class="tariff-name">Стандарт</div>
+                  <div class="tariff-price">1 800 BYN</div>
+                  <ul class="tariff-features">
+                      <li>Полный дизайн-проект</li>
+                      <li>3D-визуализация</li>
+                      <li>Срок: 14 дней</li>
+                  </ul>
+              </label>
+              <label class="tariff-card" data-tariff="premium">
+                  <input type="radio" name="tariff" value="premium">
+                  <div class="tariff-name">Премиум</div>
+                  <div class="tariff-price">2 500 BYN</div>
+                  <ul class="tariff-features">
+                      <li>Всё из Стандарт</li>
+                      <li>Авторский надзор</li>
+                      <li>Срок: 30 дней</li>
+                  </ul>
+              </label>
+          </div>
+      </div>
+
+      <!-- Секция: Загрузка фото -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="bi bi-camera"></i> Фотографии помещения
+        </h3>
+        <div class="photo-upload-area" id="photoUploadArea">
+          <input type="file" id="photoInput" multiple accept="image/*">
+          <i class="bi bi-cloud-arrow-up photo-upload-icon"></i>
+          <div class="photo-upload-text">Перетащите фотографии сюда или нажмите для выбора</div>
+          <div class="photo-upload-hint">Можно загрузить любое количество фотографий (JPG, PNG)</div>
+        </div>
+        <div class="photo-preview-container" id="photoPreviewContainer"></div>
+      </div>
+
+      <!-- Секция: Выбор товаров -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="bi bi-bag"></i> Интересующие товары
+        </h3>
+        <div class="products-selection-area">
+          <div class="products-selection-header">
+            <span class="products-selection-title">Выберите товары из каталога</span>
+            <span class="products-selection-count" id="selectedProductsCount">Выбрано: 0</span>
+          </div>
+          <div id="productsList">
+            <div class="text-center text-muted p-3">Загрузка товаров...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Секция: Пожелания -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="bi bi-chat-left-text"></i> Дополнительные пожелания
+        </h3>
+        <div class="form-group">
+          <label class="form-label">Опишите ваши пожелания</label>
+          <textarea class="form-control" name="preferences" rows="4" placeholder="Расскажите о ваших предпочтениях, стиле жизни, бюджете и других пожеланиях..."></textarea>
+        </div>
+      </div>
+
+      <!-- Секция: Адрес и оплата -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="bi bi-geo-alt"></i> Адрес и оплата
+        </h3>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label class="form-label">Адрес <span class="required">*</span></label>
+            <input type="text" class="form-control" name="address" required placeholder="Город, улица, дом, квартира">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Номер карты <span class="required">*</span></label>
+            <input type="text" class="form-control" name="cardNumber" required placeholder="0000 0000 0000 0000" maxlength="19">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Срок действия <span class="required">*</span></label>
+            <input type="text" class="form-control" name="expiry" required placeholder="ММ/ГГ" maxlength="5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVC <span class="required">*</span></label>
+            <input type="text" class="form-control" name="cvc" required placeholder="000" maxlength="3">
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопка отправки -->
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <i class="bi bi-send"></i> Отправить заявку
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="index.html" class="text-decoration-none">
+                        <img src="src/images/Лого.png" alt="Design Studio" class="logo-img-footer">
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <h5>МАГАЗИН</h5>
+                <ul class="list-unstyled">
+                    <li><a href="catalog.html?category=Гостиная" class="text-white text-decoration-none">Гостиная</a></li>
+                    <li><a href="catalog.html?category=Спальня" class="text-white text-decoration-none">Спальня</a></li>
+                    <li><a href="catalog.html?category=Кухня" class="text-white text-decoration-none">Кухня</a></li>
+                    <li><a href="catalog.html?category=Офис" class="text-white text-decoration-none">Офис</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>ЗАКАЗ ДИЗАЙНА</h5>
+                <ul class="list-unstyled">
+                    <li><a href="order.html" class="text-white text-decoration-none">Заказать</a></li>
+                    <li><a href="order.html" class="text-white text-decoration-none">Как это работает?</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 class="text-center">ПОДПИСЫВАЙТЕСЬ НА НАШИ СОЦИАЛЬНЫЕ СЕТИ</h5>
+                <div class="d-flex justify-content-center">
+                    <a href="https://pinterest.com" class="text-white me-3 text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.219-.937 1.406-5.957 1.406-5.957s-.359-.719-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245               3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+                        </svg>
+                    </a>
+                    <a href="https://instagram.com" class="text-white me-3 text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com" class="text-white text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="src/js/app.js"></script>
+<script src="src/js/order.js"></script>
+</body>
+</html>

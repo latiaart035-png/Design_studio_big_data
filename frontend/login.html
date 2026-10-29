@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Вход - Design Studio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="src/css/styles.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Стили для шапки */
+    .logo-img-footer {
+      height: 150px;
+      width: auto;
+      transition: opacity 0.3s ease;
+    }
+    .logo-img-footer:hover {
+      opacity: 0.8;
+    }
+    .logo-img {
+      height: 60px;
+      width: auto;
+      transition: opacity 0.3s ease;
+    }
+    .logo-img:hover {
+      opacity: 0.8;
+    }
+    .social-icon {
+      fill: #f1f1f1;
+      width: 32px;
+      height: 32px;
+      transition: fill 0.3s ease;
+    }
+    .social-icon:hover {
+      fill: #ccc;
+    }
+
+    /* Сплит-экран контейнер */
+    .split-screen {
+      display: flex;
+      min-height: calc(100vh - 80px);
+      background: #fff;
+    }
+
+    /* Левая часть - форма */
+    .split-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    }
+
+    .auth-container {
+      max-width: 450px;
+      width: 100%;
+      padding: 40px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1a1a2e;
+      font-family: "Georgia", serif;
+    }
+
+    .auth-subtitle {
+      color: #666;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #6B1F3F;
+      box-shadow: 0 0 0 3px rgba(107, 31, 63, 0.1);
+    }
+
+    .btn-auth {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6B1F3F 0%, #8B2F5F 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 8px;
+    }
+
+    .btn-auth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(107, 31, 63, 0.4);
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .auth-footer a {
+      color: #6B1F3F;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Правая часть - изображение */
+    .split-right {
+      flex: 1;
+      position: relative;
+      background: linear-gradient(135deg, #6B1F3F 0%, #2a0a18 100%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .split-right img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+
+    .overlay-text {
+      position: absolute;
+      bottom: 60px;
+      left: 40px;
+      right: 40px;
+      color: white;
+      text-align: left;
+      z-index: 2;
+    }
+
+    .overlay-text h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-family: "Georgia", serif;
+    }
+
+    .overlay-text p {
+      font-size: 14px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    .quote-icon {
+      font-size: 48px;
+      opacity: 0.3;
+      margin-bottom: 16px;
+    }
+
+    /* Toast уведомления */
+    .custom-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .custom-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .custom-toast.error {
+      background-color: #dc3545;
+    }
+    .custom-toast .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: 10px;
+      padding: 0;
+      line-height: 1;
+    }
+
+    @media (max-width: 768px) {
+      .split-screen {
+        flex-direction: column;
+      }
+      .split-right {
+        min-height: 300px;
+      }
+      .auth-container {
+        padding: 24px;
+      }
+      .auth-title {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="bg-dark text-white p-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="index.html" class="text-decoration-none">
+            <img src="src/images/Лого.png" alt="Design Studio" class="logo-img">
+        </a>
+        <nav class="d-flex align-items-center justify-content-center flex-grow-1">
+            <a href="shop.html" class="text-white me-3 text-decoration-none">МАГАЗИН</a>
+            <a href="catalog.html" class="text-white me-3 text-decoration-none">КАТАЛОГ ТОВАРОВ</a>
+            <a href="order.html" class="text-white me-3 text-decoration-none">ЗАКАЗ ДИЗАЙНА</a>
+            <a href="register.html" class="text-white me-3 text-decoration-none" id="navRegister" style="display: none;">РЕГИСТРАЦИЯ</a>
+            <a href="profile.html" class="text-white me-3 text-decoration-none" id="navProfile" style="display: none;">ПРОФИЛЬ</a>
+            <a href="crm.html" class="text-white me-3 text-decoration-none" id="navCrm" style="display: none;">CRM</a>
+            <a href="marketing.html" class="text-white me-3 text-decoration-none" id="navMarketing" style="display: none;">МАРКЕТИНГ</a>
+            <a href="analytics.html" class="text-white me-3 text-decoration-none" id="navAnalytics" style="display: none;">АНАЛИТИКА</a>
+        </nav>
+        <div>
+            <a href="#" class="text-white text-decoration-none" id="navLogout">ВОЙТИ</a>
+        </div>
+    </div>
+</header>
+
+<div class="split-screen">
+  <!-- Левая часть - форма входа -->
+  <div class="split-left">
+    <div class="auth-container">
+      <h1 class="auth-title">Добро пожаловать</h1>
+      <p class="auth-subtitle">Войдите в свой аккаунт, чтобы продолжить</p>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="ivan@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>Пароль</label>
+          <input type="password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-auth">Войти</button>
+      </form>
+      
+      <div class="auth-footer">
+        Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Правая часть - изображение -->
+  <div class="split-right">
+    <img src="src/images/Авторизация.png" alt="Интерьер студии дизайна" onerror="this.src='src/images/default.jpg'">
+    <div class="overlay-text">
+      <div class="quote-icon">"</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="src/js/app.js"></script>
+<script>
+  function handleLogout(event) {
+    event.preventDefault();
+    const navLogout = document.getElementById('navLogout');
+    if (navLogout.textContent === 'ВЫЙТИ') {
+      localStorage.removeItem('design_studio_user');
+      localStorage.removeItem('design_studio_token');
+      window.location.href = 'index.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  }
+</script>
+</body>
+</html>

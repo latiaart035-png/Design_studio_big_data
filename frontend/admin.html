@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Админ - Design Studio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="src/css/styles.css">
+  <style>
+    .logo-img-footer {
+      height: 150px;
+      width: auto;
+      transition: opacity 0.3s ease;
+    }
+    .logo-img-footer:hover {
+      opacity: 0.8;
+    }
+    .logo-img {
+      height: 60px;
+      width: auto;
+      transition: opacity 0.3s ease;
+    }
+    .logo-img:hover {
+      opacity: 0.8;
+    }
+
+    .social-icon {
+      fill: #f1f1f1;
+      width: 32px;
+      height: 32px;
+      transition: fill 0.3s ease;
+    }
+    .social-icon:hover {
+      fill: #ccc;
+    }
+
+    /* Toast уведомления */
+    .custom-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .custom-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .custom-toast.error {
+      background-color: #dc3545;
+    }
+    .custom-toast .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: 10px;
+      padding: 0;
+      line-height: 1;
+    }
+
+    /* Текущие изображения */
+    .current-images-block {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .current-images-block h6 {
+      color: #6B1F3F;
+      margin-bottom: 10px;
+    }
+    .current-images-block img {
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    /* Вкладки */
+    .nav-tabs .nav-link {
+      cursor: pointer;
+    }
+    .nav-tabs .nav-link.active {
+      background-color: #eb3d85;
+      color: white;
+    }
+
+    /* ========== МОДУЛЬ ТОВАРОВ ========== */
+    :root {
+      --product-bg-card: #ffffff;
+      --product-text-main: #1f2937;
+      --product-text-secondary: #4b5563;
+      --product-text-muted: #9ca3af;
+      --product-border: #e5e7eb;
+      --product-border-hover: #d1d5db;
+      --product-shadow: rgba(0, 0, 0, 0.08);
+      --product-radius: 12px;
+    }
+
+    .product-module {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .product-card {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 16px;
+      background: var(--product-bg-card);
+      border: 1px solid var(--product-border);
+      border-radius: var(--product-radius);
+      box-shadow: 0 1px 3px var(--product-shadow);
+      overflow: hidden;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--product-shadow);
+      border-color: var(--product-border-hover);
+    }
+
+    .product-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .product-image-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px;
+      background: #f3f4f6;
+    }
+
+    .main-photo {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+    }
+
+    .side-photos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .side-photos img {
+      width: 100%;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #d1d5db 0%, #e5e7eb 100%);
+    }
+
+    .more-photos {
+      width: 100%;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+
+    .product-info {
+      padding: 14px 14px 14px 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-row {
+      margin-bottom: 4px;
+    }
+
+    .category-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6d29c6;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: block;
+    }
+    
+    .product-title {
+      font-size: 16px;
+      color: var(--product-text-main);
+      margin: 0 0 8px 0;
+      font-weight: 600;
+    }
+
+    .product-description {
+      color: var(--product-text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      flex-grow: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--product-border);
+      padding-top: 12px;
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--product-text-main);
+    }
+
+    .price span {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--product-text-muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-edit {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .btn-edit:hover {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-delete {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .btn-delete:hover {
+      background: #dc2626;
+      color: white;
+    }
+
+    .products-list {
+      max-height: 450px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .products-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .products-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .products-list::-webkit-scrollbar-thumb {
+      background: #c4c4c4;
+      border-radius: 3px;
+    }
+
+    .products-list::-webkit-scrollbar-thumb:hover {
+      background: #a0a0a0;
+    }
+
+    /* ========== ЗАКАЗЫ ========== */
+    .admin-order-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .admin-order-header {
+      background: linear-gradient(135deg, #6B1F3F 0%, #8B2F5F 100%);
+      color: white;
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-order-id {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .admin-order-type {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
+
+    .admin-order-body {
+      padding: 15px;
+    }
+
+    .admin-order-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .admin-info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-info-label {
+      font-size: 0.7rem;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .admin-info-value {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+    }
+
+    .status-selector {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .status-selector label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+      font-size: 0.85rem;
+    }
+
+    .status-select {
+      width: 100%;
+      padding: 8px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+
+    .status-select:focus {
+      outline: none;
+      border-color: #6B1F3F;
+    }
+
+    .status-select option {
+      padding: 6px;
+    }
+
+    .status-select option:disabled {
+      color: #ccc;
+      background: #f5f5f5;
+    }
+
+    .order-products {
+      margin-top: 15px;
+    }
+
+    .order-products-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #333;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .order-product-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #fafafa;
+    }
+
+    .order-product-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f0f0f0;
+    }
+
+    .order-product-info {
+      flex-grow: 1;
+    }
+
+    .order-product-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .order-product-description {
+      font-size: 0.8rem;
+      color: #666;
+      max-height: 50px;
+      overflow-y: auto;
+      margin-bottom: 6px;
+      line-height: 1.4;
+      padding-right: 5px;
+    }
+
+    .order-product-description.collapsed {
+      max-height: 35px;
+    }
+
+    .order-product-description.expanded {
+      max-height: 150px;
+    }
+
+    .expand-btn {
+      background: none;
+      border: none;
+      color: #6B1F3F;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0;
+      margin-bottom: 6px;
+    }
+
+    .expand-btn:hover {
+      text-decoration: underline;
+    }
+
+    .order-product-price {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 2px;
+    }
+
+    .order-product-quantity {
+      font-size: 0.75rem;
+      color: #999;
+    }
+
+    .order-product-total {
+      font-weight: 700;
+      color: #6B1F3F;
+      font-size: 1rem;
+      text-align: right;
+      min-width: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .design-photos {
+      margin-top: 15px;
+    }
+
+    .design-photos-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .design-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .design-photo-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #eee;
+    }
+
+    .design-photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .selected-products-info {
+      margin-top: 15px;
+      padding: 12px;
+      background: #f0f7ff;
+      border-radius: 8px;
+      border: 1px solid #d0e3ff;
+    }
+
+    .selected-products-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .selected-products-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .selected-product-tag {
+      background: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      border: 1px solid #ddd;
+    }
+
+    .order-total-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid #eee;
+    }
+
+    .order-total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .order-total-row.discount {
+      color: #28a745;
+    }
+
+    .order-total-row.final {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #6B1F3F;
+      margin-bottom: 0;
+    }
+
+    .orders-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .orders-tab {
+      padding: 10px 20px;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .orders-tab:hover {
+      background: #e0e0e0;
+    }
+
+    .orders-tab.active {
+      background: #6B1F3F;
+      color: white;
+    }
+
+    .orders-tab .count {
+      background: rgba(0,0,0,0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+    }
+
+    .orders-tab.active .count {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .btn-update-status {
+      padding: 8px 16px;
+      background: #6B1F3F;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-update-status:hover {
+      background: #541831;
+    }
+
+    .current-status-info {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .current-status-info strong {
+      color: #6B1F3F;
+    }
+
+    /* ========== ПРАВАЯ ПАНЕЛЬ ========== */
+    .users-sidebar {
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+
+    /* Скидка */
+    .discount-badge {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+        .discount-badge span {
+      font-size: 0.75rem;
+      display: block;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    /* Модальное окно */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .users-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 0.5rem;
+      padding: 1rem;
+    }
+
+    .status-message {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #28a745;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: 1001;
+    }
+
+    .status-message.show {
+      opacity: 1;
+    }
+
+    .status-message.error {
+      background: #dc3545;
+    }
+
+    /* Дополнительные стили для товаров */
+    .product-module {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    /* Для отображения категорий в заказах */
+    .order-product-item {
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    /* Стили для фильтрации по категориям - добавить в нужное место */
+    .category-filter {
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .category-filter select {
+        width: 200px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+<!-- ШАПКА -->
+<header class="bg-dark text-white p-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="index.html" class="text-decoration-none">
+            <img src="src/images/Лого.png" alt="Design Studio" class="logo-img">
+        </a>
+        <nav class="d-flex align-items-center justify-content-center flex-grow-1">
+            <a href="shop.html" class="text-white me-3 text-decoration-none">МАГАЗИН</a>
+            <a href="catalog.html" class="text-white me-3 text-decoration-none">КАТАЛОГ ТОВАРОВ</a>
+            <a href="order.html" class="text-white me-3 text-decoration-none">ЗАКАЗ ДИЗАЙНА</a>
+            <a href="register.html" class="text-white me-3 text-decoration-none" id="navRegister" style="display: none;">РЕГИСТРАЦИЯ</a>
+            
+            <!-- ОДИН элемент "ПРОФИЛЬ" - ссылка меняется в зависимости от роли -->
+            <a href="profile.html" class="text-white me-3 text-decoration-none" id="navProfile" style="display: none;">ПРОФИЛЬ</a>
+            
+            <a href="crm.html" class="text-white me-3 text-decoration-none" id="navCrm" style="display: none;">CRM</a>
+            <a href="marketing.html" class="text-white me-3 text-decoration-none" id="navMarketing" style="display: none;">МАРКЕТИНГ</a>
+            <a href="analytics.html" class="text-white me-3 text-decoration-none" id="navAnalytics" style="display: none;">АНАЛИТИКА</a>
+        </nav>
+        <div>
+            <a href="#" class="text-white text-decoration-none" id="navLogout">ВОЙТИ</a>
+        </div>
+    </div>
+</header>
+
+<div class="container py-5">
+  <h1>Административная панель</h1>
+  <hr class="my-4">
+
+  <div class="row">
+    <!-- ОСНОВНОЕ ПОЛЕ (левая часть) -->
+    <div class="col-lg-9">
+      <!-- Вкладки управления -->
+      <ul class="nav nav-tabs mb-4" id="adminTabs">
+        <li class="nav-item">
+          <a class="nav-link active" data-bs-toggle="tab" href="#productsSection">
+            <i class="bi bi-box-seam"></i> Товары
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#ordersSection">
+            <i class="bi bi-receipt"></i> Заказы
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#usersSection">
+            <i class="bi bi-people"></i> Пользователи
+          </a>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- ========== СЕКЦИЯ ТОВАРОВ ========== -->
+        <div class="tab-pane fade show active" id="productsSection">
+          <h2>Управление товарами</h2>
+          
+          <div class="products-list product-module mb-4" id="productsList">
+            <!-- Загружается через JS -->
+          </div>
+
+          <hr>
+          <div class="module-card">
+            <h3 class="module-card-title" id="addTitle">Добавить товар</h3>
+            <form id="addProductForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Название *</label>
+                    <input type="text" class="form-control" name="name" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Цена *</label>
+                    <input type="number" class="form-control" name="price" step="0.01" min="0" required>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <textarea class="form-control" name="description" rows="2"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Категория *</label>
+                <select class="form-control" name="categoryId" required id="categorySelect">
+                  <option value="1">Гостиная</option>
+                  <option value="2">Спальня</option>
+                  <option value="3">Кухня</option>
+                  <option value="4">Ванная</option>
+                  <option value="5">Офис</option>
+                </select>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Главная картинка *</label>
+                    <input type="file" class="form-control" name="mainImage" accept="image/*" required>
+                    <small class="text-muted">Обязательно для заполнения</small>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Дополнительные картинки (до 3 шт.)</label>
+                    <input type="file" class="form-control" name="additionalImages" accept="image/*" multiple>
+                    <small class="text-muted">Можно выбрать несколько файлов</small>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Добавить товар
+              </button>
+            </form>
+          </div>
+
+          <hr>
+          <div class="module-card" id="editFormCard" style="display: none;">
+            <h3 class="module-card-title" id="editTitle">Редактировать товар</h3>
+            <form id="editProductForm" enctype="multipart/form-data">
+              <input type="hidden" name="id" id="editProductId">
+              
+              <div class="current-images-block" id="currentMainImage"></div>
+              <div class="current-images-block" id="currentAdditionalImages"></div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Название *</label>
+                    <input type="text" class="form-control" name="name" id="editName" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Цена *</label>
+                    <input type="number" class="form-control" name="price" id="editPrice" step="0.01" min="0" required>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <textarea class="form-control" name="description" id="editDescription" rows="2"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Категория *</label>
+                <select class="form-control" name="categoryId" id="editCategoryId" required></select>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Новое главное изображение</label>
+                    <input type="file" class="form-control" name="newMainImage" id="newMainImage" accept="image/*">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Новые дополнительные изображения</label>
+                    <input type="file" class="form-control" name="newAdditionalImages" id="newAdditionalImages" accept="image/*" multiple>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                  <i class="bi bi-check"></i> Сохранить изменения
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="hideEditForm()">
+                  <i class="bi bi-x"></i> Отмена
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ========== СЕКЦИЯ ЗАКАЗОВ ========== -->
+        <div class="tab-pane fade" id="ordersSection">
+          <h2>Управление заказами</h2>
+          
+          <div class="orders-tabs mb-4">
+            <button class="orders-tab active" data-filter="all">
+              Все заказы <span class="count" id="countAll">0</span>
+            </button>
+            <button class="orders-tab" data-filter="product">
+              <i class="bi bi-bag"></i> Заказы товаров <span class="count" id="countProducts">0</span>
+            </button>
+            <button class="orders-tab" data-filter="design">
+              <i class="bi bi-palette"></i> Заказы дизайна <span class="count" id="countDesign">0</span>
+            </button>
+          </div>
+
+          <div id="ordersContainer">
+            <div class="text-center text-muted p-5">Загрузка заказов...</div>
+          </div>
+        </div>
+
+        <!-- ========== СЕКЦИЯ ПОЛЬЗОВАТЕЛЕЙ ========== -->
+        <div class="tab-pane fade" id="usersSection">
+          <h2>Управление пользователями</h2>
+          
+          <div class="module-card">
+            <ul class="nav nav-tabs mb-3" id="usersTabs">
+              <li class="nav-item">
+                <a class="nav-link active" href="#" data-user-tab="all">Все</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-user-tab="clients">Клиенты</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-user-tab="admins">Администраторы</a>
+              </li>
+            </ul>
+            
+            <div class="users-list" id="usersList">
+              <!-- Загружается через JS -->
+            </div>
+          </div>
+
+          <hr>
+          <div class="module-card">
+            <h3 class="module-card-title">Добавить администратора</h3>
+            <form id="addAdminForm">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Имя</label>
+                    <input type="text" class="form-control" name="firstName" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Фамилия</label>
+                    <input type="text" class="form-control" name="lastName" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-control" name="password" required>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-person-plus"></i> Добавить администратора
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПРАВАЯ ЧАСТЬ (сайдбар) -->
+    <div class="col-lg-3">
+      <div class="users-sidebar">
+        <!-- Информация о текущем пользователе -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Информация о пользователе</h5>
+            <p class="card-text"><strong>Имя:</strong> <span id="accountFirstName">-</span></p>
+            <p class="card-text"><strong>Фамилия:</strong> <span id="accountLastName">-</span></p>
+            <p class="card-text"><strong>Email:</strong> <span id="accountEmail">-</span></p>
+            <p class="card-text"><strong>Роль:</strong> <span id="accountRole">Администратор</span></p>
+            <hr>
+            <div class="mb-3">
+              <small class="text-muted">Ваша скидка:</small>
+              <div class="discount-badge" id="userDiscountBadge">
+                <span id="accountDiscountValue">0%</span>
+                <span>от суммы заказа</span>
+              </div>
+            </div>
+            <button class="btn btn-primary w-100" onclick="openPasswordModal()">Изменить пароль</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+<!-- МОДАЛЬНЫЕ ОКНА -->
+<!-- Модальное окно изменения пароля -->
+<div id="passwordModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5><i class="bi bi-key"></i> Изменить пароль</h5>
+      <button type="button" class="btn-close" onclick="closePasswordModal()"></button>
+    </div>
+    <form id="changePasswordForm">
+      <div class="mb-3">
+        <label class="form-label">Старый пароль</label>
+        <input type="password" class="form-control" name="currentPassword" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Новый пароль</label>
+        <input type="password" class="form-control" name="newPassword" required>
+        <small class="text-muted">Минимум 3 символа</small>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Подтвердите пароль</label>
+        <input type="password" class="form-control" name="confirmPassword" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Изменить</button>
+        <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Отмена</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления пользователя -->
+<div id="deleteUserModal" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 450px;">
+    <div class="modal-header">
+      <h5><i class="bi bi-exclamation-triangle text-warning"></i> Подтверждение удаления</h5>
+      <button type="button" class="btn-close" onclick="closeDeleteUserModal()"></button>
+    </div>
+    <div class="modal-body text-center">
+      <p class="mb-1" style="font-size: 16px;">Вы уверены, что хотите удалить этого пользователя?</p>
+      <p class="text-muted" style="font-size: 14px;">Все данные будут безвозвратно удалены.</p>
+      <div id="deleteUserInfo" class="mt-3 p-3 bg-light rounded" style="font-size: 13px;"></div>
+    </div>
+    <div class="modal-footer justify-content-center">
+      <button type="button" class="btn btn-secondary" onclick="closeDeleteUserModal()">Отмена</button>
+      <button type="button" class="btn btn-danger" id="confirmDeleteUserBtn">
+        <i class="bi bi-trash"></i> Удалить
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно заказов пользователя -->
+<div id="userDetailsModal" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 800px;">
+    <div id="statusMessage" class="status-message"></div>
+    <div class="modal-header">
+      <h5><i class="bi bi-receipt"></i> Заказы пользователя</h5>
+      <button type="button" class="btn-close" onclick="closeUserDetailsModal()"></button>
+    </div>
+    <div class="modal-body">
+      <ul class="nav nav-tabs" id="orderTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="product-tab" data-bs-toggle="tab" data-bs-target="#productOrders" type="button" role="tab">
+            <i class="bi bi-bag"></i> Заказы на мебель
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="design-tab" data-bs-toggle="tab" data-bs-target="#designOrders" type="button" role="tab">
+            <i class="bi bi-palette"></i> Заказы на дизайн
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content mt-3" id="orderTabsContent">
+        <div class="tab-pane fade show active" id="productOrders" role="tabpanel">
+          <div id="productOrdersContent"></div>
+        </div>
+        <div class="tab-pane fade" id="designOrders" role="tabpanel">
+          <div id="designOrdersContent"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeUserDetailsModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="index.html" class="text-decoration-none">
+                        <img src="src/images/Лого.png" alt="Design Studio" class="logo-img-footer">
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <h5>МАГАЗИН</h5>
+                <ul class="list-unstyled">
+                    <li><a href="catalog.html?category=Гостиная" class="text-white text-decoration-none">Гостиная</a></li>
+                    <li><a href="catalog.html?category=Спальня" class="text-white text-decoration-none">Спальня</a></li>
+                    <li><a href="catalog.html?category=Кухня" class="text-white text-decoration-none">Кухня</a></li>
+                    <li><a href="catalog.html?category=Офис" class="text-white text-decoration-none">Офис</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>ЗАКАЗ ДИЗАЙНА</h5>
+                <ul class="list-unstyled">
+                    <li><a href="order.html" class="text-white text-decoration-none">Заказать</a></li>
+                    <li><a href="order.html" class="text-white text-decoration-none">Как это работает?</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 class="text-center">ПОДПИСЫВАЙТЕСЬ НА НАШИ СОЦИАЛЬНЫЕ СЕТИ</h5>
+                <div class="d-flex justify-content-center">
+                    <a href="https://pinterest.com" class="text-white me-3 text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.219-.937 1.406-5.957 1.406-5.957s-.359-.719-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245               3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+                        </svg>
+                    </a>
+                    <a href="https://instagram.com" class="text-white me-3 text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com" class="text-white text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="src/js/app.js"></script>
+<script src="src/js/admin.js"></script>
+<script>
+  function hideEditForm() {
+    document.getElementById('addTitle').style.display = 'block';
+    document.getElementById('addProductForm').style.display = 'block';
+    document.getElementById('editTitle').style.display = 'none';
+    document.getElementById('editProductForm').style.display = 'none';
+    document.getElementById('editFormCard').style.display = 'none';
+    
+    document.getElementById('editProductId').value = '';
+    document.getElementById('editName').value = '';
+    document.getElementById('editDescription').value = '';
+    document.getElementById('editPrice').value = '';
+    
+    const newMainImageInput = document.getElementById('newMainImage');
+    const newAdditionalImagesInput = document.getElementById('newAdditionalImages');
+    if (newMainImageInput) newMainImageInput.value = '';
+    if (newAdditionalImagesInput) newAdditionalImagesInput.value = '';
+    
+    const currentImageDiv = document.getElementById('currentMainImage');
+    const currentAdditionalDiv = document.getElementById('currentAdditionalImages');
+    if (currentImageDiv) currentImageDiv.innerHTML = '';
+    if (currentAdditionalDiv) currentAdditionalDiv.innerHTML = '';
+  }
+
+  function openPasswordModal() {
+    document.getElementById('passwordModal').style.display = 'flex';
+  }
+  
+  function closePasswordModal() {
+    document.getElementById('passwordModal').style.display = 'none';
+  }
+  
+  function closeUserDetailsModal() {
+    document.getElementById('userDetailsModal').style.display = 'none';
+  }
+
+  function closeDeleteUserModal() {
+    document.getElementById('deleteUserModal').style.display = 'none';
+  }
+
+  function handleLogout(event) {
+    event.preventDefault();
+    const navLogout = document.getElementById('navLogout');
+    
+    if (navLogout.textContent === 'ВЫЙТИ') {
+      localStorage.removeItem('design_studio_user');
+      localStorage.removeItem('design_studio_token');
+      window.location.href = 'index.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  }
+</script>
+</body>
+</html>

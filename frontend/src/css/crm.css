@@ -1,0 +1,1742 @@
+/* ========================================
+   CRM MODULE STYLES v2.3
+   ======================================== */
+
+/* ---------- KPI CARDS ---------- */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+
+.kpi-card.primary::before { background: #6B1F3F; }
+.kpi-card.success::before { background: #28a745; }
+.kpi-card.info::before { background: #17a2b8; }
+.kpi-card.warning::before { background: #ffc107; }
+.kpi-card.danger::before { background: #dc3545; }
+.kpi-card.secondary::before { background: #6c757d; }
+
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.kpi-card.primary .kpi-icon { background: rgba(107, 31, 63, 0.1); color: #6B1F3F; }
+.kpi-card.success .kpi-icon { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+.kpi-card.info .kpi-icon { background: rgba(23, 162, 184, 0.1); color: #17a2b8; }
+.kpi-card.warning .kpi-icon { background: rgba(255, 193, 7, 0.1); color: #d39e00; }
+.kpi-card.danger .kpi-icon { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+.kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.kpi-trend.up { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+.kpi-trend.down { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+.kpi-trend.neutral { background: rgba(108, 117, 125, 0.1); color: #6c757d; }
+
+.kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+.kpi-label {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 12px;
+}
+
+/* ---------- RFM MATRIX ---------- */
+.rfm-matrix-container {
+    overflow-x: auto;
+    padding: 16px;
+}
+
+.rfm-matrix {
+    display: table;
+    border-collapse: collapse;
+    min-width: 700px;
+    width: 100%;
+}
+
+.rfm-matrix .matrix-corner,
+.rfm-matrix .matrix-header-cell,
+.rfm-matrix .matrix-row-header,
+.rfm-matrix .matrix-cell {
+    display: table-cell;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.rfm-matrix .matrix-corner {
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.rfm-matrix .matrix-header-cell {
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 13px;
+    color: #495057;
+}
+
+.rfm-matrix .matrix-row-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 12px;
+    color: #6c757d;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+}
+
+.rfm-matrix .matrix-cell {
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 160px;
+    position: relative;
+}
+
+.rfm-matrix .matrix-cell:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.rfm-matrix .matrix-cell .cell-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.rfm-matrix .matrix-cell .cell-count {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.rfm-matrix .matrix-cell .cell-revenue {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.rfm-matrix .matrix-cell .cell-desc {
+    font-size: 11px;
+    color: #adb5bd;
+    margin-top: 4px;
+}
+
+/* RFM цвета */
+.rfm-matrix .matrix-cell.champions { background: rgba(40, 167, 69, 0.15); border-color: rgba(40, 167, 69, 0.4); }
+.rfm-matrix .matrix-cell.loyal { background: rgba(23, 162, 184, 0.15); border-color: rgba(23, 162, 184, 0.4); }
+.rfm-matrix .matrix-cell.potential { background: rgba(255, 193, 7, 0.15); border-color: rgba(255, 193, 7, 0.4); }
+.rfm-matrix .matrix-cell.atrisk { background: rgba(253, 126, 20, 0.15); border-color: rgba(253, 126, 20, 0.4); }
+.rfm-matrix .matrix-cell.dormant { background: rgba(108, 117, 125, 0.15); border-color: rgba(108, 117, 125, 0.4); }
+.rfm-matrix .matrix-cell.lost { background: rgba(220, 53, 69, 0.15); border-color: rgba(220, 53, 69, 0.4); }
+
+/* Подсказки при наведении */
+.matrix-cell[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 100;
+    margin-bottom: 4px;
+}
+
+/* ---------- RFM DETAIL CARDS ---------- */
+.rfm-detail-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border-left: 4px solid #6c757d;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.rfm-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.rfm-detail-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+}
+
+.rfm-stat-box {
+    text-align: center;
+}
+
+.rfm-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.rfm-stat-label {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.rfm-recommendation {
+    font-size: 13px;
+    color: #495057;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.rfm-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ---------- ABC CARDS ---------- */
+.abc-detail-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border-left: 4px solid #6c757d;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.abc-progress .progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.abc-progress .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.abc-summary-item .summary-label {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.abc-summary-item .summary-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #6B1F3F;
+}
+
+/* ============================================
+   PROFESSIONAL FUNNEL STYLES
+   ============================================ */
+
+.funnel-professional {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.funnel-stage-wrapper {
+    position: relative;
+    margin-bottom: 0;
+}
+
+/* Широкий этап (Посетители) */
+.funnel-stage-wide {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: transform 0.2s;
+}
+
+.funnel-stage-wide:hover {
+    transform: scale(1.02);
+}
+
+/* Средний этап (Корзина) */
+.funnel-stage-medium {
+    width: 85%;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    transition: transform 0.2s;
+}
+
+.funnel-stage-medium:hover {
+    transform: scale(1.02);
+}
+
+/* Маленький этап (Заказ) */
+.funnel-stage-small {
+    width: 70%;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    transition: transform 0.2s;
+}
+
+.funnel-stage-small:hover {
+    transform: scale(1.02);
+}
+
+/* Финальный этап (Оплата) */
+.funnel-stage-final {
+    width: 55%;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4);
+    transition: transform 0.2s;
+}
+
+.funnel-stage-final:hover {
+    transform: scale(1.02);
+}
+
+/* Контент внутри этапа */
+.funnel-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.funnel-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.funnel-info {
+    flex: 1;
+}
+
+.funnel-label {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.funnel-value {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.funnel-percent {
+    font-size: 18px;
+    font-weight: 600;
+    opacity: 0.95;
+    min-width: 60px;
+    text-align: right;
+}
+
+/* Коннектор между этапами */
+.funnel-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+    position: relative;
+}
+
+.funnel-arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 16px solid #dee2e6;
+    opacity: 0.6;
+}
+
+.funnel-conversion {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #495057;
+    margin-top: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Метрики воронки */
+.funnel-metrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.funnel-metric-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.funnel-metric-card:hover {
+    background: #e9ecef;
+    transform: translateX(4px);
+}
+
+.metric-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.bg-success-light { background: rgba(40, 167, 69, 0.1); }
+.bg-info-light { background: rgba(23, 162, 184, 0.1); }
+.bg-warning-light { background: rgba(255, 193, 7, 0.1); }
+.bg-danger-light { background: rgba(220, 53, 69, 0.1); }
+
+.metric-info {
+    flex: 1;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 2px;
+}
+
+.metric-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* Рекомендации */
+.funnel-recommendations {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rec-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #495057;
+}
+
+.rec-item i {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* Анимация появления этапов */
+@keyframes funnelSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.funnel-stage-wide,
+.funnel-stage-medium,
+.funnel-stage-small,
+.funnel-stage-final {
+    animation: funnelSlideIn 0.5s ease forwards;
+}
+
+.funnel-stage-wide { animation-delay: 0.1s; }
+.funnel-stage-medium { animation-delay: 0.2s; }
+.funnel-stage-small { animation-delay: 0.3s; }
+.funnel-stage-final { animation-delay: 0.4s; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .funnel-stage-wide,
+    .funnel-stage-medium,
+    .funnel-stage-small,
+    .funnel-stage-final {
+        width: 100% !important;
+        padding: 16px;
+    }
+    
+    .funnel-value {
+        font-size: 22px;
+    }
+    
+    .funnel-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+
+/* ============================================
+   SIMPLE ACTIVITY HEATMAP
+   ============================================ */
+
+.activity-heatmap-simple {
+    padding: 20px;
+}
+
+.heatmap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.heatmap-year {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.legend-cells {
+    display: flex;
+    gap: 3px;
+}
+
+.legend-cell {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.legend-cell.intensity-0 { background: #ebedf0; }
+.legend-cell.intensity-1 { background: #9be9a8; }
+.legend-cell.intensity-2 { background: #40c463; }
+.legend-cell.intensity-3 { background: #30a14e; }
+.legend-cell.intensity-4 { background: #216e39; }
+
+/* Сетка месяцев */
+.heatmap-grid-simple {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.heatmap-month-block {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.month-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.month-days {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.week-row {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+}
+
+.day-cell {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.day-cell:hover {
+    transform: scale(1.3);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.day-cell.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.day-cell.empty:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Интенсивности */
+.day-cell.intensity-0 { background: #ebedf0; }
+.day-cell.intensity-1 { background: #9be9a8; }
+.day-cell.intensity-2 { background: #40c463; }
+.day-cell.intensity-3 { background: #30a14e; }
+.day-cell.intensity-4 { background: #216e39; }
+
+.month-total {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c757d;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Статистика активности */
+.activity-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.activity-stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.activity-stat-card .stat-title {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.activity-stat-card .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.activity-stat-card .stat-subtitle {
+    font-size: 11px;
+    color: #adb5bd;
+    margin-top: 4px;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .heatmap-grid-simple {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .heatmap-grid-simple {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .activity-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .heatmap-grid-simple {
+        grid-template-columns: 1fr;
+    }
+    
+    .activity-stats-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- CUSTOMER TABLE ---------- */
+.table-customers thead th {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6c757d;
+    border: none;
+    padding: 14px 16px;
+    background: #f8f9fa;
+}
+
+.table-customers tbody td {
+    vertical-align: middle;
+    padding: 14px 16px;
+    border-color: #f0f0f0;
+}
+
+.table-customers tbody tr:hover {
+    background: #fafafa;
+}
+
+.customer-avatar-sm {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ---------- PAGINATION ---------- */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid #e9ecef;
+}
+
+/* ---------- FILTERS ---------- */
+.customers-filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.customers-filters .form-select,
+.customers-filters .form-control {
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.customers-filters .search-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* ---------- BULK ACTIONS BAR ---------- */
+.bulk-actions-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: none;
+}
+
+.bulk-actions-bar.show {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* ---------- DRAWER ---------- */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    z-index: 1040;
+}
+
+.drawer-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drawer-right {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+    transition: right 0.3s ease;
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+.drawer-right.open {
+    right: 0;
+}
+
+.drawer-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.drawer-header h4 {
+    margin: 0;
+    flex: 1;
+}
+
+.drawer-header .customer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.drawer-body {
+    padding: 24px;
+}
+
+.drawer-section {
+    margin-bottom: 24px;
+}
+
+.drawer-section h6 {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #6c757d;
+    margin-bottom: 12px;
+}
+
+.drawer-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.drawer-metric {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.drawer-metric:last-child {
+    border-bottom: none;
+}
+
+.drawer-metric .metric-label {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+.drawer-metric .metric-value {
+    font-weight: 600;
+}
+
+.drawer-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.recommendation-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.recommendation-item:last-child {
+    border-bottom: none;
+}
+
+.recommendation-item i {
+    color: #6B1F3F;
+}
+
+/* ---------- TOAST ---------- */
+#toastContainer {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toast {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 280px;
+    animation: slideIn 0.3s ease;
+    border-left: 4px solid #28a745;
+}
+
+.toast.toast-error {
+    border-left-color: #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ---------- SEGMENTS QUICK VIEW ---------- */
+.segments-quick-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.segment-quick-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.segment-quick-item:hover {
+    background: #f3f4f6;
+    transform: translateX(4px);
+}
+
+.quick-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.quick-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.quick-count {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.quick-revenue {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* ---------- CUSTOM SEGMENTS ---------- */
+.segment-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    border-left: 4px solid #6B1F3F;
+    margin-bottom: 12px;
+}
+
+/* ---------- MODALS ---------- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .drawer-right {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .customers-filters {
+        flex-direction: column;
+    }
+    
+    .funnel-stage-bar {
+        padding: 12px 16px;
+    }
+    
+    .funnel-stage-count {
+        font-size: 20px;
+    }
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kpi-card,
+.chart-container,
+.segment-card-v2,
+.rfm-detail-card,
+.abc-detail-card {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.kpi-card:nth-child(1) { animation-delay: 0.05s; }
+.kpi-card:nth-child(2) { animation-delay: 0.1s; }
+.kpi-card:nth-child(3) { animation-delay: 0.15s; }
+.kpi-card:nth-child(4) { animation-delay: 0.2s; }
+.kpi-card:nth-child(5) { animation-delay: 0.25s; }
+.kpi-card:nth-child(6) { animation-delay: 0.3s; }
+
+/* ============================================
+   PROFESSIONAL SEGMENT PIE CHART STYLES
+   ============================================ */
+
+.segment-pie-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 0;
+}
+
+.segment-pie-chart-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    flex-shrink: 0;
+}
+
+/* Центральная статистика */
+.segment-pie-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.pie-center-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.pie-center-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.pie-center-revenue {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6B1F3F;
+    background: rgba(107, 31, 63, 0.08);
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+/* Профессиональная легенда */
+.segment-pie-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pie-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.pie-legend-item:hover,
+.pie-legend-item.active {
+    background: #ffffff;
+    border-color: #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateX(4px);
+}
+
+.pie-legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.pie-legend-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pie-legend-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.pie-legend-count {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.pie-legend-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.pie-legend-percent {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.pie-legend-revenue {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+/* Пустое состояние */
+.segment-pie-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+.pie-empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.pie-empty-icon i {
+    font-size: 36px;
+    color: #adb5bd;
+}
+
+.pie-empty-text {
+    font-size: 14px;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .segment-pie-wrapper {
+        flex-direction: column;
+    }
+    
+    .segment-pie-chart-container {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .segment-pie-legend {
+        width: 100%;
+    }
+    
+    .pie-center-value {
+        font-size: 26px;
+    }
+    
+    .pie-center-revenue {
+        font-size: 12px;
+    }
+}
+
+/* Анимация появления */
+@keyframes pieFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.segment-pie-chart-container {
+    animation: pieFadeIn 0.5s ease forwards;
+}
+
+.segment-pie-legend .pie-legend-item {
+    animation: pieFadeIn 0.4s ease forwards;
+}
+
+.segment-pie-legend .pie-legend-item:nth-child(1) { animation-delay: 0.1s; }
+.segment-pie-legend .pie-legend-item:nth-child(2) { animation-delay: 0.15s; }
+.segment-pie-legend .pie-legend-item:nth-child(3) { animation-delay: 0.2s; }
+.segment-pie-legend .pie-legend-item:nth-child(4) { animation-delay: 0.25s; }
+.segment-pie-legend .pie-legend-item:nth-child(5) { animation-delay: 0.3s; }
+
+/* ============================================
+   IMPROVED FUNNEL STYLES
+   ============================================ */
+
+.funnel-professional {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.funnel-stage-wrapper {
+    position: relative;
+    margin-bottom: 0;
+    animation: funnelSlideIn 0.5s ease forwards;
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+@keyframes funnelSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Широкий этап (Посетители) */
+.funnel-stage-wide {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.funnel-stage-wide:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+}
+
+/* Средний этап (Корзина) */
+.funnel-stage-medium {
+    width: 85%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 16px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.funnel-stage-medium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(240, 147, 251, 0.4);
+}
+
+/* Маленький этап (Заказ) */
+.funnel-stage-small {
+    width: 70%;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 16px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.funnel-stage-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(79, 172, 254, 0.4);
+}
+
+/* Финальный этап (Оплата) */
+.funnel-stage-final {
+    width: 55%;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border-radius: 16px;
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(67, 233, 123, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.funnel-stage-final:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(67, 233, 123, 0.4);
+}
+
+/* Контент внутри этапа */
+.funnel-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.funnel-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+}
+
+.funnel-info {
+    flex: 1;
+}
+
+.funnel-label {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.funnel-value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.funnel-percent {
+    font-size: 20px;
+    font-weight: 600;
+    opacity: 0.95;
+    min-width: 70px;
+    text-align: right;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 14px;
+    border-radius: 40px;
+}
+
+/* Коннектор между этапами */
+.funnel-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    position: relative;
+}
+
+.funnel-arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 18px solid #dee2e6;
+    opacity: 0.7;
+}
+
+.funnel-conversion {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #495057;
+    margin-top: 8px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Метрики воронки */
+.funnel-metrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.funnel-metric-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.funnel-metric-card:hover {
+    background: #e9ecef;
+    transform: translateX(4px);
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.bg-success-light { background: rgba(40, 167, 69, 0.12); color: #28a745; }
+.bg-info-light { background: rgba(23, 162, 184, 0.12); color: #17a2b8; }
+.bg-warning-light { background: rgba(255, 193, 7, 0.12); color: #d39e00; }
+.bg-danger-light { background: rgba(220, 53, 69, 0.12); color: #dc3545; }
+
+.metric-info {
+    flex: 1;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .funnel-stage-wide,
+    .funnel-stage-medium,
+    .funnel-stage-small,
+    .funnel-stage-final {
+        width: 100% !important;
+        padding: 16px;
+    }
+    
+    .funnel-value {
+        font-size: 24px;
+    }
+    
+    .funnel-percent {
+        font-size: 16px;
+        min-width: 55px;
+        padding: 4px 10px;
+    }
+    
+    .funnel-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+    
+    .funnel-content {
+        gap: 12px;
+    }
+}
+
+/* ============================================
+   IMPROVED ACTIVITY HEATMAP STYLES
+   ============================================ */
+
+.activity-heatmap-wrapper {
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.heatmap-months {
+    display: flex;
+    margin-left: 48px;
+    margin-bottom: 8px;
+}
+
+.heatmap-month-label {
+    font-size: 11px;
+    color: #6c757d;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.heatmap-grid {
+    display: flex;
+    gap: 8px;
+}
+
+.heatmap-weekdays {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.weekday-label {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.heatmap-cells {
+    flex: 1;
+    overflow-x: auto;
+}
+
+.heatmap-row {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 3px;
+}
+
+.heatmap-cell {
+    width: 32px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1f2937;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+/* Интенсивность цветов */
+.heatmap-cell.intensity-0 {
+    background: #ebedf0;
+    color: #adb5bd;
+}
+.heatmap-cell.intensity-1 {
+    background: #c6e48b;
+    color: #1f2937;
+}
+.heatmap-cell.intensity-2 {
+    background: #7bc96f;
+    color: white;
+}
+.heatmap-cell.intensity-3 {
+    background: #239a3b;
+    color: white;
+}
+.heatmap-cell.intensity-4 {
+    background: #196127;
+    color: white;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .heatmap-cell {
+        width: 24px;
+        height: 24px;
+        font-size: 9px;
+    }
+    
+    .weekday-label {
+        height: 24px;
+        font-size: 10px;
+    }
+    
+    .heatmap-weekdays {
+        width: 30px;
+    }
+}
+
+/* ============================================
+   ЛОГОТИП - ФИКСАЦИЯ РАЗМЕРА
+   ============================================ */
+
+.logo-img {
+    max-height: 50px;
+    width: auto;
+    display: block;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .logo-img {
+        max-height: 40px;
+    }
+}

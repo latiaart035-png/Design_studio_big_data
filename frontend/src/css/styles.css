@@ -1,0 +1,190 @@
+.hero {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.bg-image {
+    position: relative;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.btn-primary {
+    background-color: #6B1F3F;
+    border-color: #6B1F3F;
+}
+
+.btn-primary:hover {
+    background-color: #541831;
+    border-color: #541831;
+}
+
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 500px;
+    width: 100%;
+}
+
+/* Кастомные стили для toast с плавным гаснущим эффектом и ярким цветом */
+.custom-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.custom-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.custom-toast .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 0;
+    line-height: 1;
+}
+
+.custom-toast .close-btn:hover {
+    color: #f8f9fa;
+}
+
+/* Уменьшение отступов слева и справа */
+main.catalog-container {
+    padding-left: 0.5rem !important;
+    padding-right: 1rem !important;
+}
+
+/* Поведение кнопок наведением */
+button.btn-primary.add-to-cart:hover {
+    background-color: #541831 !important;
+    color: white !important;
+    transition: background-color 0.3s ease;
+}
+
+.testimonial-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    padding: 3rem;
+    margin: 2rem 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+}
+
+.quote-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 1rem;
+}
+
+.testimonial-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #6B1F3F;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.testimonial-text {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.testimonial-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.testimonial-list li {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.testimonial-list li::before {
+    content: '✓';
+    color: #6B1F3F;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.testimonial-image {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease;
+}
+
+.testimonial-image:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .testimonial-card {
+        padding: 2rem;
+    }
+    .testimonial-title {
+        font-size: 2rem;
+    }
+}

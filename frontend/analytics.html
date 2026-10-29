@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Аналитика - Design Studio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <style>
+        .logo-img {
+            height: 50px;
+            width: auto;
+            transition: opacity 0.3s ease;
+        }
+        .logo-img:hover {
+            opacity: 0.8;
+        }
+        .logo-img-footer {
+            height: 150px;
+            width: auto;
+            transition: opacity 0.3s ease;
+        }
+        .logo-img-footer:hover {
+            opacity: 0.8;
+        }
+
+        .dashboard-section {
+            margin-bottom: 3rem;
+        }
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6B1F3F;
+        }
+        .metric-label {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+        .top-customer-item {
+            transition: background 0.2s ease;
+        }
+        .top-customer-item:hover {
+            background: #e9ecef !important;
+        }
+        .social-icon {
+            fill: #f1f1f1;
+            width: 32px;
+            height: 32px;
+            transition: fill 0.3s ease;
+        }
+        .social-icon:hover {
+            fill: #ccc;
+        }
+        .btn-pdf {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        .btn-pdf:hover {
+            background-color: #bb2d3b;
+            border-color: #b02a37;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* ============================================
+        ANALYTICS PAGE STYLES
+        ============================================ */
+
+        /* Toast уведомления */
+        .custom-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 9999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .custom-toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .custom-toast .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 15px;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .custom-toast .close-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .custom-toast {
+                top: 70px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- ШАПКА -->
+<header class="bg-dark text-white p-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="index.html" class="text-decoration-none">
+            <img src="src/images/Лого.png" alt="Design Studio" class="logo-img">
+        </a>
+        <nav class="d-flex align-items-center justify-content-center flex-grow-1">
+            <a href="shop.html" class="text-white me-3 text-decoration-none">МАГАЗИН</a>
+            <a href="catalog.html" class="text-white me-3 text-decoration-none">КАТАЛОГ ТОВАРОВ</a>
+            <a href="order.html" class="text-white me-3 text-decoration-none">ЗАКАЗ ДИЗАЙНА</a>
+            <a href="register.html" class="text-white me-3 text-decoration-none" id="navRegister" style="display: none;">РЕГИСТРАЦИЯ</a>
+            <a href="profile.html" class="text-white me-3 text-decoration-none" id="navProfile" style="display: none;">ПРОФИЛЬ</a>
+            <a href="crm.html" class="text-white me-3 text-decoration-none" id="navCrm" style="display: none;">CRM</a>
+            <a href="marketing.html" class="text-white me-3 text-decoration-none" id="navMarketing" style="display: none;">МАРКЕТИНГ</a>
+            <a href="analytics.html" class="text-white me-3 text-decoration-none" id="navAnalytics" style="display: none;">АНАЛИТИКА</a>
+        </nav>
+        <div>
+            <a href="#" class="text-white text-decoration-none" id="navLogout">ВОЙТИ</a>
+        </div>
+    </div>
+</header>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-graph-up"></i> Панель аналитики</h1>
+        <button class="btn btn-pdf" onclick="AnalyticsModule.exportToPDF()">
+            <i class="bi bi-file-pdf"></i> Экспорт в PDF
+        </button>
+    </div>
+    <hr class="my-4">
+
+    <!-- Данные о клиентах -->
+    <div class="dashboard-section" id="clientsSection">
+        <h2><i class="bi bi-people-fill"></i> Данные о клиентах</h2>
+        <p id="currentPeriod" class="text-muted">Общий период (за всё время)</p>
+        
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="metric-card" style="padding: 1.2rem; display: flex; flex-direction: column; justify-content: center; min-height: 130px;">
+                    <h5 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #6c757d;">
+                        <i class="bi bi-arrow-repeat"></i> Частота покупок
+                    </h5>
+                    <!-- УВЕЛИЧЕННЫЙ РАЗМЕР ТЕКСТА -->
+                    <div class="metric-value" style="font-size: 2.5rem; font-weight: 700; line-height: 1.2;" id="purchaseFrequencyValue">0.00</div>
+                    <div class="metric-label" style="font-size: 0.7rem; margin-top: 0.25rem;">заказов на покупателя</div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="metric-card" style="padding: 1.2rem; min-height: 130px;">
+                    <h5 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: #6c757d;">
+                        <i class="bi bi-trophy"></i> Топ-3 клиента
+                    </h5>
+                    <ul class="list-unstyled mt-1" id="topCustomersList" style="margin-bottom: 0;">
+                        <li class="text-muted text-center" style="font-size: 0.8rem;">Загрузка...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h6><i class="bi bi-calendar-range"></i> Выбор периода для частоты покупок</h6>
+            <form id="frequencyForm" class="row g-3">
+                <div class="col-md-3">
+                    <label for="frequencyStartDate" class="form-label">Дата начала</label>
+                    <input type="date" class="form-control" id="frequencyStartDate">
+                </div>
+                <div class="col-md-3">
+                    <label for="frequencyEndDate" class="form-label">Дата окончания</label>
+                    <input type="date" class="form-control" id="frequencyEndDate">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-check-lg"></i> Обновить
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="resetFrequency">
+                        <i class="bi bi-arrow-repeat"></i> Сброс
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- Данные о посещениях магазина -->
+    <div class="dashboard-section" id="visitsSection">
+        <h2><i class="bi bi-eye-fill"></i> Данные о посещениях магазина</h2>
+        
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="metric-card" style="padding: 1.2rem; display: flex; flex-direction: column; justify-content: center; min-height: 130px;">
+                    <h5 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #6c757d;">
+                        <i class="bi bi-clock"></i> Среднее время на сайте
+                    </h5>
+                    <div class="metric-value" style="font-size: 1.8rem; font-weight: 700; line-height: 1.2;" id="avgTimeValue">0 мин</div>
+                    <div class="metric-label" style="font-size: 0.7rem; margin-top: 0.25rem;">среднее время за сессию</div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="metric-card" style="padding: 1.2rem; display: flex; flex-direction: column; justify-content: center; min-height: 130px;">
+                    <h5 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #6c757d;">
+                        <i class="bi bi-bar-chart-steps"></i> Общее количество посещений
+                    </h5>
+                    <div class="metric-value" style="font-size: 1.8rem; font-weight: 700; line-height: 1.2;" id="totalVisitsValue">0</div>
+                    <div class="metric-label" style="font-size: 0.7rem; margin-top: 0.25rem;">всего визитов</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h6><i class="bi bi-calendar-range"></i> Выписка посещений по дням</h6>
+            <form id="visitsForm" class="row g-3">
+                <div class="col-md-3">
+                    <label for="visitsStartDate" class="form-label">Дата начала</label>
+                    <input type="date" class="form-control" id="visitsStartDate" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="visitsEndDate" class="form-label">Дата окончания</label>
+                    <input type="date" class="form-control" id="visitsEndDate" required>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-check-lg"></i> Получить выписку
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="resetVisits">
+                        <i class="bi bi-arrow-repeat"></i> Сброс
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <h5><i class="bi bi-graph-up"></i> График количества посещений по месяцам</h5>
+        <div class="chart-container">
+            <canvas id="visitsChart"></canvas>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- Показатели продаж -->
+    <div class="dashboard-section" id="salesSection">
+        <h2><i class="bi bi-currency-dollar"></i> Показатели продаж</h2>
+        
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="metric-card" style="padding: 1.2rem; display: flex; flex-direction: column; justify-content: center; min-height: 130px;">
+                    <h5 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #6c757d;">
+                        <i class="bi bi-receipt"></i> Средний чек
+                    </h5>
+                    <div class="metric-value" style="font-size: 1.5rem; font-weight: 700; line-height: 1.2;" id="avgCheck">0 BYN</div>
+                    <div class="metric-label" style="font-size: 0.7rem; margin-top: 0.25rem;">средняя сумма заказа</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="metric-card" style="padding: 1.2rem; display: flex; flex-direction: column; justify-content: center; min-height: 130px;">
+                    <h5 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #6c757d;">
+                        <i class="bi bi-arrow-left-right"></i> Конверсия
+                    </h5>
+                    <div class="metric-value" style="font-size: 1.5rem; font-weight: 700; line-height: 1.2;" id="conversion">0%</div>
+                    <div class="metric-label" style="font-size: 0.7rem; margin-top: 0.25rem;">покупателей к клиентам</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="metric-card" style="padding: 1.2rem; display: flex; flex-direction: column; justify-content: center; min-height: 130px;">
+                    <h5 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #6c757d;">
+                        <i class="bi bi-cart-check"></i> Общий объём продаж
+                    </h5>
+                    <div class="metric-value" style="font-size: 1.5rem; font-weight: 700; line-height: 1.2;" id="totalSales">0 BYN</div>
+                    <div class="metric-label" style="font-size: 0.7rem; margin-top: 0.25rem;">за всё время</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h6><i class="bi bi-calendar-range"></i> Выписка продаж по дням</h6>
+            <form id="salesForm" class="row g-3">
+                <div class="col-md-3">
+                    <label for="salesStartDate" class="form-label">Дата начала</label>
+                    <input type="date" class="form-control" id="salesStartDate" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="salesEndDate" class="form-label">Дата окончания</label>
+                    <input type="date" class="form-control" id="salesEndDate" required>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-check-lg"></i> Получить выписку
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="resetSales">
+                        <i class="bi bi-arrow-repeat"></i> Сброс
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <h5><i class="bi bi-bar-chart"></i> График суммы продаж по месяцам</h5>
+        <div class="chart-container">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Футер -->
+<footer class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="index.html" class="text-decoration-none">
+                        <img src="src/images/Лого.png" alt="Design Studio" class="logo-img-footer">
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <h5>МАГАЗИН</h5>
+                <ul class="list-unstyled">
+                    <li><a href="catalog.html?category=Гостиная" class="text-white text-decoration-none">Гостиная</a></li>
+                    <li><a href="catalog.html?category=Спальня" class="text-white text-decoration-none">Спальня</a></li>
+                    <li><a href="catalog.html?category=Кухня" class="text-white text-decoration-none">Кухня</a></li>
+                    <li><a href="catalog.html?category=Офис" class="text-white text-decoration-none">Офис</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>ЗАКАЗ ДИЗАЙНА</h5>
+                <ul class="list-unstyled">
+                    <li><a href="order.html" class="text-white text-decoration-none">Заказать</a></li>
+                    <li><a href="order.html" class="text-white text-decoration-none">Как это работает?</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 class="text-center">ПОДПИСЫВАЙТЕСЬ НА НАШИ СОЦИАЛЬНЫЕ СЕТИ</h5>
+                <div class="d-flex justify-content-center">
+                    <a href="https://pinterest.com" class="text-white me-3 text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.219-.937 1.406-5.957 1.406-5.957s-.359-.719-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245               3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+                        </svg>
+                    </a>
+                    <a href="https://instagram.com" class="text-white me-3 text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com" class="text-white text-decoration-none">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="src/js/app.js"></script>
+<script src="src/js/analytics.js"></script>
+<script>
+    // Функция выхода для шапки
+    function handleLogout(event) {
+        event.preventDefault();
+        const navLogout = document.getElementById('navLogout');
+        
+        if (navLogout && navLogout.textContent === 'ВЫЙТИ') {
+            localStorage.removeItem('design_studio_user');
+            localStorage.removeItem('design_studio_token');
+            window.location.href = 'index.html';
+        } else {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Назначаем обработчик
+    const logoutLink = document.getElementById('navLogout');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', handleLogout);
+    }
+</script>
+</body>
+</html>
